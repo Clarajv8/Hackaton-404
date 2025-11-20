@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&display=swap');
 
-body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace; margin: 0; overflow-x: hidden; width: 100vw; }
+body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace; margin: 0; overflow-x: hidden; width: 100vw; scrollbar-width: none; -ms-overflow-style: none; }
+body::-webkit-scrollbar {
+  display: none;
+}
+
 #space-canvas { position: fixed; top: 0; left: 0; z-index: 0; }
 
 .scroll-container {
@@ -21,7 +25,7 @@ body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace; 
 
 /* MARTE */
 #giant-mars {
-    width: 120vmax; height: 120vmax; min-width: auto; min-height: auto; border-radius: 50%;
+    width: 120vmax; height: 120vmax; min-width: auto; min-height: auto; border-radius: 100%;
     background-image: url('https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg');
     background-size: 105%; background-position: center; background-repeat: no-repeat;
     box-shadow: inset -40px -40px 100px rgba(0,0,0,0.95), inset 5px 5px 15px rgba(255,200,150,0.3), 0 0 60px rgba(184,60,20,0.4);
@@ -51,7 +55,7 @@ body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace; 
 .bottom-right { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 
 /* OTROS TEXTOS */
-.scroll-hint-text { font-family: 'VT323', monospace; color: #5599bb; font-size: 1rem; margin-top: 3rem; opacity: 0.7; }
+.scroll-hint-text { font-family: 'VT323', monospace; color: cyan; font-size: 2rem; margin-top: 1rem; opacity: 0.7; text-shadow: 0 0 15px rgb(0, 114, 114);}
 .glitch-title { font-size: 18vw; color: white; font-family: 'Black Ops One'; text-shadow: 5px 0 red, -5px 0 cyan; line-height: 0.8; }
 @keyframes blink { from { opacity: 1; } to { opacity: 0.4; } }
 

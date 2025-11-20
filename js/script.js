@@ -48,7 +48,7 @@ let tl = gsap.timeline({
     scrollTrigger: {
         trigger: ".scroll-container",
         start: "top top",
-        end: "+=800%",
+        end: "+=600%",
         scrub: 1,
         pin: true, 
         onLeave: () => enableGame(),
@@ -59,7 +59,7 @@ let tl = gsap.timeline({
 tl.to("#text-approach", { opacity: 0, duration: 1 })
   .to("#giant-mars", { scale: 0, opacity: 0, duration: 2, ease: "power2.in" }, "-=0.5")
   .to("#text-404", { autoAlpha: 1, scale: 1, duration: 1, ease: "elastic.out(1, 0.75)" })
-  .to("#text-404", { autoAlpha: 0, duration: 1, delay: 3 })
+  .to("#text-404", { autoAlpha: 0, duration: 1, delay: 1 })
   .to("#game-layer", { autoAlpha: 1, duration: 0.5 })
   .fromTo("#spaceship", 
       { x: centerX, y: startY }, 
