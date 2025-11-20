@@ -1,184 +1,115 @@
-@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&display=swap');
 
 body {
-    margin: 0;
-    overflow: hidden;
     background-color: #050505;
-    font-family: 'Share Tech Mono', monospace;
-    user-select: none;
-    height: 100vh;
-    width: 100vw;
+    color: #0f0; 
+    font-family: 'VT323', monospace;
     cursor: crosshair;
 }
 
-#space-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-#game-layer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    pointer-events: none; 
-}
-
-/* --- COHETE --- */
-.rocket-container {
-    position: absolute;
-    left: 0; 
-    top: 0;
-    width: 280px;
-    height: 100px;
-    z-index: 60; 
-    pointer-events: auto;
-    cursor: grab;
-    will-change: transform; 
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
-    transform: translate(-500px, -500px);
-}
-
-.rocket-container.active {
-    cursor: grabbing;
-    filter: drop-shadow(0 0 25px rgba(0, 170, 255, 0.6));
-}
-
-.rocket-inner {
+/* --- SCROLL --- */
+.scroll-container {
     position: relative;
+    z-index: 20;
     width: 100%;
-    height: 100%;
 }
 
-.rocket-container.active .rocket-inner {
-    animation: rocketVibrate 0.1s infinite;
-}
-
-.rocket-body {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    width: 200px;
-    height: 80px;
-    background: linear-gradient(to bottom, #e6e6e6, #ffffff, #bfbfbf);
-    border-radius: 10% 50% 50% 10% / 50% 50% 50% 50%;
-    box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
-    z-index: 2;
+.scroll-section {
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #999;
 }
 
-.rivet {
-    position: absolute;
-    width: 4px; height: 4px;
-    background: #888;
-    border-radius: 50%;
-    top: 10px; left: 50px;
-    box-shadow: 20px 0 #888, 40px 0 #888, 60px 0 #888;
+.content-wrapper {
+    text-align: center;
+    opacity: 0; 
 }
 
-.rocket-nose {
+.glitch-title {
+    font-size: 12rem;
+    color: white;
+    font-family: 'Black Ops One', cursive;
+    position: relative;
+    text-shadow: 2px 2px 0px #ff0000, -2px -2px 0px #00ff00;
+    animation: glitch 1s infinite;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0) }
+    20% { transform: translate(-2px, 2px) }
+    40% { transform: translate(-2px, -2px) }
+    60% { transform: translate(2px, 2px) }
+    80% { transform: translate(2px, -2px) }
+    100% { transform: translate(0) }
+}
+
+/* --- NAVE --- */
+.rocket-container {
     position: absolute;
-    right: -35px;
-    top: 10px;
-    width: 0; height: 0; 
-    border-top: 40px solid transparent;
-    border-bottom: 40px solid transparent;
-    border-left: 60px solid #ff3333;
-    z-index: 1;
+    width: 200px; height: 60px;
+    z-index: 60;
+    will-change: transform;
+    transform: translate(-50%, 150vh); 
+    left: 50%; 
+}
+
+.rocket-container.active {
+    filter: drop-shadow(0 0 15px cyan);
+}
+
+.rocket-body {
+    width: 100%; height: 100%;
+    background: #ddd;
+    border-radius: 50% 50% 50% 50% / 20% 20% 20% 20%;
+    position: relative;
+    border: 2px solid #555;
+    overflow: hidden;
+}
+
+.logo-404 {
+    position: absolute;
+    top: 15px; left: 60px;
+    font-family: 'Black Ops One';
+    color: #333;
+    font-size: 24px;
 }
 
 .window {
     position: absolute;
-    right: 40px; top: 20px;
-    width: 35px; height: 35px;
+    right: 40px; top: 10px;
+    width: 20px; height: 20px;
     background: #00aaff;
-    border: 4px solid #444;
     border-radius: 50%;
-    box-shadow: inset 5px 5px 10px rgba(255,255,255,0.6);
-    overflow: hidden;
-}
-.window::after {
-    content: ''; position: absolute; top: 5px; right: 5px;
-    width: 10px; height: 10px; background: white; border-radius: 50%; opacity: 0.6;
+    box-shadow: inset 2px 2px 5px white;
 }
 
-.logo-404 {
-    font-family: 'Black Ops One', cursive;
-    font-size: 2.5rem; color: #222; opacity: 0.8;
-    margin-right: 45px; transform: skewX(-10deg);
-}
-
-.fin {
-    position: absolute; background: #ff3333; z-index: 1; border: 2px solid #cc0000;
-}
-.fin-top { 
-    top: -20px; left: 20px; width: 60px; height: 40px; 
-    transform: skewX(-30deg); border-radius: 10px 50px 0 0;
-}
-.fin-bottom { 
-    bottom: -20px; left: 20px; width: 60px; height: 40px; 
-    transform: skewX(30deg); border-radius: 0 0 50px 10px;
-}
-.fin-back {
-    left: -10px; top: 30px; width: 20px; height: 40px;
-    background: #990000; border-radius: 5px;
-}
-
-/* --- OBSTÁCULOS --- */
-.obstacle-planet {
+.wing-top, .wing-bottom {
     position: absolute;
+    width: 40px; height: 30px;
+    background: #ff3333;
+    border: 2px solid #900;
+    z-index: -1;
+}
+.wing-top { top: -20px; left: 20px; transform: skewX(-40deg); border-radius: 10px 0 0 0; }
+.wing-bottom { bottom: -20px; left: 20px; transform: skewX(40deg); border-radius: 0 0 0 10px; }
+.wing-back { position: absolute; left: -10px; top: 15px; width: 15px; height: 30px; background: #900; }
+
+.rocket-flame {
+    position: absolute;
+    left: -30px; top: 15px;
+    width: 40px; height: 30px;
+    background: orange;
     border-radius: 50%;
-    z-index: 55; 
-    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5);
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.2s;
 }
+.rocket-container.active .rocket-flame { opacity: 1; animation: flameFlicker 0.1s infinite; }
+@keyframes flameFlicker { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
 
-/* --- UI --- */
-.instructions {
-    position: absolute; bottom: 30px; width: 100%; text-align: center;
-    color: rgba(255,255,255,0.5); font-size: 0.9rem; pointer-events: none; z-index: 80;
-}
-.sub-hint {
-    font-size: 0.7rem; margin-top: 8px; opacity: 0.5; color: #88ccff;
-}
-.return-btn {
-    pointer-events: auto; margin-top: 10px; padding: 8px 20px;
-    background: rgba(255, 51, 51, 0.1); border: 1px solid #ff3333; color: #ff3333;
-    border-radius: 4px; cursor: pointer; transition: 0.3s;
-    font-family: 'Share Tech Mono', monospace;
-}
-.return-btn:hover { background: #ff3333; color: white; box-shadow: 0 0 15px #ff3333; }
-
-/* --- ANIMACIONES --- */
-@keyframes rocketVibrate {
-    0% { transform: translate(1px, 1px); }
-    25% { transform: translate(-1px, -1px); }
-    50% { transform: translate(-1px, 1px); }
-    75% { transform: translate(1px, -1px); }
-    100% { transform: translate(0, 0); }
-}
-.shaking { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite; }
-@keyframes shake {
-    10%, 90% { transform: translate3d(-2px, -1px, 0); }
-    20%, 80% { transform: translate3d(3px, 2px, 0); }
-    30%, 50%, 70% { transform: translate3d(-5px, -3px, 0); }
-    40%, 60% { transform: translate3d(5px, 3px, 0); }
-}
-
-.explosion {
-    position: absolute; width: 10px; height: 10px; background: white;
-    border-radius: 50%; z-index: 200; animation: explode 0.8s forwards ease-out;
-}
-@keyframes explode {
-    0% { transform: scale(1); opacity: 1; background: #fff; }
-    50% { transform: scale(30); opacity: 1; background: #ffaa00; }
-    100% { transform: scale(100); opacity: 0; background: #ff0000; }
+/* Obstáculos */
+.obstacle-planet {
+    position: absolute; border-radius: 50%; z-index: 55;
+    box-shadow: -5px -5px 10px rgba(0,0,0,0.5) inset;
 }
