@@ -141,23 +141,6 @@ body {
     box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5);
 }
 
-/* --- ROCAS (Draggables) --- */
-.draggable-rock {
-    position: absolute;
-    cursor: grab;
-    z-index: 50;
-    pointer-events: auto;
-}
-.draggable-rock:active { cursor: grabbing; }
-
-.rock-visual {
-    width: 70px; height: 70px;
-    background: radial-gradient(circle at 30% 30%, #8d6e63, #3e2723);
-    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.8), 5px 5px 10px rgba(0,0,0,0.3);
-    animation: spinRock 20s linear infinite;
-}
-
 /* --- UI --- */
 .instructions {
     position: absolute; bottom: 30px; width: 100%; text-align: center;
@@ -182,10 +165,6 @@ body {
     75% { transform: translate(1px, -1px); }
     100% { transform: translate(0, 0); }
 }
-@keyframes spinRock {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
 .shaking { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite; }
 @keyframes shake {
     10%, 90% { transform: translate3d(-2px, -1px, 0); }
@@ -202,20 +181,4 @@ body {
     0% { transform: scale(1); opacity: 1; background: #fff; }
     50% { transform: scale(30); opacity: 1; background: #ffaa00; }
     100% { transform: scale(100); opacity: 0; background: #ff0000; }
-}
-
-.black-hole {
-    position: absolute; width: 0; height: 0; background: black; border-radius: 50%;
-    box-shadow: 0 0 40px 10px #fff, inset 0 0 60px #4b0082; z-index: 100;
-    transform: translate(-50%, -50%); animation: expandBH 4s forwards ease-in-out;
-}
-@keyframes expandBH {
-    0% { width: 0; height: 0; opacity: 1; }
-    10% { width: 50px; height: 50px; }
-    80% { width: 250vmax; height: 250vmax; }
-    100% { width: 300vmax; height: 300vmax; background:black; box-shadow: none;}
-}
-.sucked-in {
-    transition: all 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19);
-    transform: scale(0) rotate(720deg) !important; opacity: 0;
 }

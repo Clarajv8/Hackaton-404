@@ -21,32 +21,37 @@ let mouse = { x: width/2, y: height/2 };
 let ship = { 
     x: width/2, 
     y: height/2, 
-    rot: 0
+    rot: 0,       
+    targetRot: 0   
 };
 
-window.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-});
+const updateMouse = (x, y) => {
+    mouse.x = x;
+    mouse.y = y;
+};
+window.addEventListener('mousemove', e => updateMouse(e.clientX, e.clientY));
 window.addEventListener('touchmove', e => {
-    mouse.x = e.touches[0].clientX;
-    mouse.y = e.touches[0].clientY;
+    updateMouse(e.touches[0].clientX, e.touches[0].clientY);
 }, {passive: false});
+
+/* --- FUNCIÓN MÁGICA: LERP --- */
+const lerp = (start, end, factor) => start + (end - start) * factor;
 
 /* --- SISTEMA DE PARTÍCULAS (MOTOR) --- */
 const particles = [];
 
 class Particle {
-    constructor(x, y, isTurbo) {
+    constructor(x, y, isTurbo, shipVelocityX) {
         this.x = x;
         this.y = y;
-        const speed = isTurbo ? Math.random() * 10 + 15 : Math.random() * 2 + 2;
-        this.vx = -speed; 
+        
+        const baseSpeed = isTurbo ? (Math.random() * 10 + 15) : (Math.random() * 2 + 2);
+        
+        this.vx = -baseSpeed + (shipVelocityX * 0.2); 
         this.vy = (Math.random() - 0.5) * 2; 
         
         this.life = 1.0; 
         this.decay = Math.random() * 0.03 + 0.01;
-        
         this.isTurbo = isTurbo;
         this.size = Math.random() * 5 + 2;
     }
@@ -65,7 +70,7 @@ class Particle {
         
         if(this.isTurbo) {
             ctx.fillStyle = `hsl(${200 + Math.random()*40}, 100%, ${50 + Math.random()*50}%)`;
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 15;
             ctx.shadowColor = '#00aaff';
         } else {
             ctx.fillStyle = `hsl(${10 + Math.random()*40}, 100%, 50%)`;
@@ -90,21 +95,24 @@ class Star {
         this.size = Math.random() * 1.5;
     }
     update() {
-        let currentSpeed = isShipActive ? this.baseSpeed + 25 : this.baseSpeed;
+        let currentSpeed = isShipActive ? this.baseSpeed + 35 : this.baseSpeed;
         this.x -= currentSpeed;
         if (this.x < 0) { this.x = width; this.y = Math.random() * height; }
     }
     draw() {
         ctx.fillStyle = 'white';
         ctx.beginPath();
-        if(isShipActive) ctx.rect(this.x, this.y, this.size + 30, this.size); 
-        else ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        if(isShipActive) {
+            ctx.rect(this.x, this.y, this.size + 50, this.size); 
+        } else {
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        }
         ctx.fill();
     }
 }
 for(let i=0; i<200; i++) stars.push(new Star());
 
-/* --- OBSTÁCULOS --- */
+/* --- GESTOR DE OBSTÁCULOS --- */
 let obstacles = [];
 let obstacleTimer = 0;
 
@@ -145,9 +153,8 @@ function spawnObstacle() {
     obstacles.push({ el: el, x: width + 100, size: size });
 }
 
-/* --- BUCLE PRINCIPAL --- */
+/* --- BUCLE PRINCIPAL (PHYSICS LOOP) --- */
 const spaceshipEl = document.getElementById('spaceship');
-const lerp = (start, end, factor) => start + (end - start) * factor;
 
 function animate() {
     ctx.fillStyle = isShipActive ? '#000000' : '#050505';
@@ -156,30 +163,53 @@ function animate() {
     stars.forEach(s => { s.update(); s.draw(); });
 
     if(!isResetting) {
+        // --- LÓGICA DE MOVIMIENTO SUAVE (LERP) ---
+        
+        const followSpeed = 0.08; 
+        
+        const rotationSpeed = 0.1; 
+
         if (isShipActive) {
-            ship.x = lerp(ship.x, mouse.x, 0.08);
-            ship.y = lerp(ship.y, mouse.y, 0.08);
+            let prevX = ship.x;
+
+            ship.x = lerp(ship.x, mouse.x, followSpeed);
+            ship.y = lerp(ship.y, mouse.y, followSpeed);
             
-            let dx = mouse.x - ship.x;
-            let targetRot = dx * 0.05;
-            targetRot = Math.max(-30, Math.min(30, targetRot));
-            ship.rot = lerp(ship.rot, targetRot, 0.1);
+            let velX = ship.x - prevX;
+
+            let diffX = mouse.x - ship.x;
+            let targetAngle = diffX * 0.15; 
+            
+            targetAngle = Math.max(-40, Math.min(40, targetAngle));
+            
+            ship.rot = lerp(ship.rot, targetAngle, rotationSpeed);
+            
+            const nozzleOffset = -80; 
+            const rad = ship.rot * Math.PI/180;
+            const nozzleX = ship.x + Math.cos(rad) * nozzleOffset;
+            const nozzleY = ship.y + Math.sin(rad) * nozzleOffset;
+            
+            for(let i=0; i<5; i++) {
+                particles.push(new Particle(nozzleX, nozzleY + (Math.random()-0.5)*10, true, velX));
+            }
 
         } else {
             ship.y = lerp(ship.y, ship.y + Math.sin(Date.now()/500)*0.5, 0.1);
+     
             ship.rot = lerp(ship.rot, 0, 0.05);
+            
+            const nozzleOffset = -80;
+            const nozzleX = ship.x + Math.cos(ship.rot*Math.PI/180) * nozzleOffset;
+            const nozzleY = ship.y + Math.sin(ship.rot*Math.PI/180) * nozzleOffset;
+            particles.push(new Particle(nozzleX, nozzleY, false, 0));
         }
-        spaceshipEl.style.transform = `translate(calc(${ship.x}px - 50%), calc(${ship.y}px - 50%)) rotate(${ship.rot}deg)`;
-        
-        const nozzleOffset = -80; 
-        const nozzleX = ship.x + Math.cos(ship.rot * Math.PI/180) * nozzleOffset;
-        const nozzleY = ship.y + Math.sin(ship.rot * Math.PI/180) * nozzleOffset;
-        const spawnCount = isShipActive ? 5 : 1;
-        for(let i=0; i<spawnCount; i++) {
-            particles.push(new Particle(nozzleX, nozzleY + (Math.random()-0.5)*10, isShipActive));
-        }
+
+        // APLICAR TRANSFORMACIÓN AL DOM
+        // Usamos translate3d para aceleración por hardware
+        spaceshipEl.style.transform = `translate3d(calc(${ship.x}px - 50%), calc(${ship.y}px - 50%), 0) rotate(${ship.rot}deg)`;
     }
 
+    // 3. Actualizar Partículas
     for (let i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
         particles[i].draw(ctx);
@@ -196,10 +226,7 @@ const statusMsg = document.getElementById('status-msg');
 
 spaceshipEl.addEventListener('mousedown', () => activateShip(true));
 window.addEventListener('mouseup', () => activateShip(false));
-
-spaceshipEl.addEventListener('touchstart', (e) => {
-    e.preventDefault(); activateShip(true);
-});
+spaceshipEl.addEventListener('touchstart', (e) => { e.preventDefault(); activateShip(true); });
 window.addEventListener('touchend', () => activateShip(false));
 
 function activateShip(active) {
@@ -218,12 +245,12 @@ function activateShip(active) {
     }
 }
 
-/* --- COLISIONES (JUEGO) --- */
+/* --- COLISIONES Y LÓGICA DE JUEGO --- */
 function checkShipCrash(obs) {
     const dx = ship.x - (obs.x + obs.size/2);
     const dy = ship.y - (parseFloat(obs.el.style.top) + obs.size/2);
     const dist = Math.hypot(dx, dy);
-    
+
     if(dist < 30 + obs.size/2) {
         triggerCrash();
     }
@@ -243,53 +270,4 @@ function triggerCrash() {
     document.body.classList.add('shaking');
 
     setTimeout(() => location.reload(), 1500);
-}
-
-/* --- DRAG & DROP PIEDRAS --- */
-const rocks = document.querySelectorAll('.draggable-rock');
-rocks.forEach(elm => {
-    let dragging = false;
-    elm.addEventListener('mousedown', () => dragging = true);
-    window.addEventListener('mouseup', () => dragging = false);
-    window.addEventListener('mousemove', (e) => {
-        if(dragging && !isResetting) {
-            elm.style.left = e.clientX - 35 + 'px'; 
-            elm.style.top = e.clientY - 35 + 'px';
-            checkRockCollision();
-        }
-    });
-});
-
-function checkRockCollision() {
-    const rects = Array.from(rocks).map(r => r.getBoundingClientRect());
-    
-    for(let i=0; i<rects.length; i++) {
-        for(let j=i+1; j<rects.length; j++) {
-             const dist = Math.hypot(rects[i].x - rects[j].x, rects[i].y - rects[j].y);
-             if(dist < 60) {
-                 triggerSingularity(rects[i].x, rects[i].y);
-                 return;
-             }
-        }
-    }
-}
-
-function triggerSingularity(x, y) {
-    if(isResetting) return;
-    isResetting = true;
-    const bh = document.createElement('div');
-    bh.className = 'black-hole';
-    bh.style.left = x + 'px'; bh.style.top = y + 'px';
-    document.body.appendChild(bh);
-    document.body.classList.add('shaking');
-    
-    spaceshipEl.classList.add('sucked-in');
-    spaceshipEl.style.left = x + 'px'; spaceshipEl.style.top = y + 'px';
-    rocks.forEach(r => {
-        r.style.transition = "all 0.5s";
-        r.style.left = x + 'px'; r.style.top = y + 'px';
-        r.classList.add('sucked-in');
-    });
-
-    setTimeout(() => location.reload(), 2500);
 }
