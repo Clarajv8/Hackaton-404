@@ -3,67 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error 404 - Major Tom's Lost Signal</title>
+    <title>404 - Mars Not Found</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        body { margin: 0; overflow-x: hidden; background-color: #050505; font-family: 'VT323', monospace; }
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; }
-        #game-layer { pointer-events: none; opacity: 0; } 
-    </style>
 </head>
 <body>
 
     <canvas id="space-canvas"></canvas>
 
     <div class="scroll-container">
-        <section class="scroll-section" id="section-intro">
-            <div class="content-wrapper">
-                <h1 class="glitch-title" data-text="404">404</h1>
-                <p class="console-text text-green-500">SYSTEM ERROR: PLANET NOT FOUND</p>
-                <p class="scroll-hint">▼ DESLIZA PARA INICIAR PROTOCOLO DE EMERGENCIA ▼</p>
+        <div class="story-element">
+            <div id="giant-mars"></div>
+        </div>
+        
+        <div id="text-approach" class="story-element text-center flex flex-col items-center z-30">
+            <div class="sci-fi-panel">
+                <div class="corner top-left"></div><div class="corner top-right"></div>
+                <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
+                <div class="panel-header"><span class="status-dot"></span> SISTEMA DE NAVEGACIÓN</div>
+                <h2 class="main-title">DESTINO CONFIRMADO</h2>
+                <div class="panel-divider"></div>
+                <p class="sub-title blink">INICIANDO SECUENCIA DE ATERRIZAJE...</p>
+                <p class="coords" style="color: #ffd700; font-size: 1.2rem;">RÉCORD ACTUAL: <span id="intro-highscore">0</span></p>
             </div>
-        </section>
+            <p class="scroll-hint-text">▼ DESLIZA PARA DESCENDER ▼</p>
+        </div>
 
-        <section class="scroll-section" id="section-message">
-            <div class="content-wrapper">
-                <h2 class="msg-title text-red-500">MAJOR TOM...</h2>
-                <p class="console-text text-lg">"Mars has vanished from the solar system."</p>
-                <p class="console-text text-sm mt-4 text-gray-400">Communications with Earth: OFFLINE.</p>
+        <div id="text-404" class="story-element absolute-center opacity-0 z-40 text-center pointer-events-none flex flex-col items-center justify-center">
+            
+            <h1 class="glitch-title text-9xl text-white mb-4">
+                <span class="breathing-text inline-block">404</span>
+            </h1>
+            
+            <p class="text-2xl text-red-500 bg-black/80 inline-block px-6 py-2 border border-red-500 mb-8 tracking-widest">
+                ⚠ ERROR CRÍTICO: REALIDAD NO ENCONTRADA
+            </p>
+
+            <div class="scroll-warning">
+                <div class="arrow-down"></div>
+                <p>DESLIZA PARA FORZAR REINICIO DE SISTEMA</p>
+                <div class="arrow-down"></div>
             </div>
-        </section>
 
-        <section class="scroll-section" id="section-transition"></section>
+        </div>
     </div>
 
-    <div id="game-layer" class="fixed inset-0 w-full h-full z-50">
-        
-        <div class="absolute top-10 left-10 text-green-500 pointer-events-none select-none z-40 hidden" id="hud">
-            <p>VELOCITY: <span id="vel-display">WARP 9</span></p>
-            <p>STATUS: <span id="status-display">MANUAL CONTROL</span></p>
+    <div id="game-layer" class="fixed inset-0 w-full h-full z-50 pointer-events-none opacity-0 overflow-hidden">
+        <div id="scoreboard" class="absolute top-6 right-6 text-right font-mono hidden select-none z-[60]">
+            <p class="text-green-500 text-xl opacity-80">RÉCORD: <span id="highscore-display">0</span></p>
+            <p class="text-white text-4xl mt-1 drop-shadow-md">PUNTOS: <span id="score-display">0</span></p>
         </div>
-
+        <div id="new-record-msg" class="fixed inset-0 flex items-center justify-center z-[120] hidden bg-black/80">
+            <h1 id="record-text-content" class="text-5xl md:text-7xl text-yellow-400 font-bold animate-bounce text-center px-4" style="font-family: 'Black Ops One';">¡¡ NUEVO RÉCORD !!</h1>
+        </div>
         <div class="rocket-container" id="spaceship">
-            <div class="hull">
-                <div class="window-side"></div>
-                <div class="stripe-detail"></div>
-            </div>
-            <div class="fin fin-top"></div>
-            <div class="fin fin-bottom"></div>
-            <div class="fin fin-back"></div>
+            <div class="hull"><div class="window-side"></div><div class="stripe-detail"></div></div>
+            <div class="fin fin-top"></div><div class="fin fin-bottom"></div><div class="fin fin-back"></div>
             <div class="engine-fire"></div>
         </div>
-
-        <div class="instructions absolute bottom-10 w-full text-center z-50" id="instr">
-            <p id="status-msg" class="text-xl text-white animate-pulse">SISTEMA LISTO // MANTÉN CLICK PARA ACELERAR</p>
-            <button class="return-btn mt-4 border border-green-500 text-green-500 px-6 py-2 hover:bg-green-500 hover:text-black transition" onclick="location.href='/'">VOLVER A TIERRA</button>
+        <div class="absolute bottom-10 w-full text-center z-50 hidden" id="instr">
+            <p id="status-msg" class="text-xl text-white animate-pulse">SISTEMA DE VUELO MANUAL ACTIVO</p>
         </div>
-
         <div id="crash-screen" class="fixed inset-0 bg-red-900/80 flex items-center justify-center z-[100] hidden">
             <div class="text-center">
                 <h1 class="text-6xl font-bold text-white mb-4">SEÑAL PERDIDA</h1>
-                <p class="text-white text-xl">Reiniciando simulación...</p>
+                <p class="text-white text-xl">Reiniciando sistemas...</p>
             </div>
         </div>
     </div>

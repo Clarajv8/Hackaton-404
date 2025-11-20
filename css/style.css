@@ -1,142 +1,128 @@
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&display=swap');
 
-body {
-    background-color: #050505;
-    color: #0f0; 
-    font-family: 'VT323', monospace;
-    cursor: crosshair;
-}
+body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace; margin: 0; overflow-x: hidden; width: 100vw; }
+#space-canvas { position: fixed; top: 0; left: 0; z-index: 0; }
 
-/* --- SCROLL --- */
 .scroll-container {
     position: relative;
-    z-index: 20;
     width: 100%;
-}
-
-.scroll-section {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.content-wrapper {
-    text-align: center;
-    opacity: 0; 
-}
-
-.glitch-title {
-    font-size: 12rem;
-    color: white;
-    font-family: 'Black Ops One', cursive;
-    position: relative;
-    text-shadow: 2px 2px 0px #ff0000, -2px -2px 0px #00ff00;
-    animation: glitch 1s infinite;
-}
-
-@keyframes glitch {
-    0% { transform: translate(0) }
-    20% { transform: translate(-2px, 2px) }
-    40% { transform: translate(-2px, -2px) }
-    60% { transform: translate(2px, 2px) }
-    80% { transform: translate(2px, -2px) }
-    100% { transform: translate(0) }
-}
-
-/* ---------------- */
-
-.rocket-container {
-    position: absolute;
-    top: 50%; left: 50%; 
-    transform: translate(-50%, -50%);
-    
-    width: 100px; height: 40px;
-    z-index: 60;
-    will-change: transform;
-    transform-origin: center center;
-    visibility: hidden;
-}
-
-.hull {
-    width: 100%; height: 100%;
-    background: linear-gradient(to bottom, #eee 0%, #999 50%, #555 100%);
-    
-    clip-path: polygon(0% 10%, 75% 0%, 100% 50%, 75% 100%, 0% 90%);
-    
-    position: relative;
+    height: 100vh; 
+    overflow: hidden;
     z-index: 10;
 }
 
-.window-side {
+.story-element {
     position: absolute;
-    right: 30px; top: 10px; 
-    width: 12px; height: 12px;
-    background: #00eaff;
-    border-radius: 2px; 
-    box-shadow: 0 0 5px #00eaff;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+}
+.absolute-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; }
+
+/* MARTE */
+#giant-mars {
+    width: 120vmax; height: 120vmax; min-width: auto; min-height: auto; border-radius: 50%;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg');
+    background-size: 105%; background-position: center; background-repeat: no-repeat;
+    box-shadow: inset -40px -40px 100px rgba(0,0,0,0.95), inset 5px 5px 15px rgba(255,200,150,0.3), 0 0 60px rgba(184,60,20,0.4);
+    will-change: transform, opacity;
 }
 
-.stripe-detail {
-    position: absolute;
-    left: 15px; top: 0; bottom: 0;
-    width: 10px;
-    background: #ff3333;
+/* PANEL SCI-FI */
+.sci-fi-panel {
+    position: relative; background: rgba(0, 10, 20, 0.6); backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 247, 255, 0.2); padding: 3rem 5rem; text-align: center;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); max-width: 90vw;
+}
+.sci-fi-panel .main-title {
+    font-family: 'Black Ops One', cursive; color: #fff; font-size: 4rem; line-height: 1.1;
+    text-transform: uppercase; letter-spacing: 0.1em; margin: 1rem 0;
+    text-shadow: 0 0 15px rgba(0, 247, 255, 0.6);
+    background: linear-gradient(to bottom, #ffffff, #aaddff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sci-fi-panel .sub-title { font-family: 'VT323', monospace; color: #00f7ff; font-size: 1.8rem; letter-spacing: 0.15em; margin-top: 1rem; }
+.sci-fi-panel .panel-header { font-family: 'VT323', monospace; color: #5599bb; font-size: 1rem; letter-spacing: 0.2em; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.status-dot { width: 8px; height: 8px; background-color: #00ff00; border-radius: 50%; box-shadow: 0 0 5px #00ff00; animation: blink 2s infinite; }
+.panel-divider { height: 1px; width: 60%; background: linear-gradient(90deg, transparent, #00f7ff, transparent); margin: 0 auto; opacity: 0.5; }
+.corner { position: absolute; width: 20px; height: 20px; border: 2px solid #00f7ff; transition: all 0.3s ease; }
+.top-left { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.top-right { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+.bottom-left { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+.bottom-right { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+/* OTROS TEXTOS */
+.scroll-hint-text { font-family: 'VT323', monospace; color: #5599bb; font-size: 1rem; margin-top: 3rem; opacity: 0.7; }
+.glitch-title { font-size: 18vw; color: white; font-family: 'Black Ops One'; text-shadow: 5px 0 red, -5px 0 cyan; line-height: 0.8; }
+@keyframes blink { from { opacity: 1; } to { opacity: 0.4; } }
+
+/* NAVE & JUEGO */
+.rocket-container { position: absolute; top: 0; left: 0; width: 100px; height: 40px; z-index: 60; will-change: transform; visibility: hidden; }
+.hull { width: 100%; height: 100%; background: linear-gradient(to bottom, #eee, #555); clip-path: polygon(0% 10%, 75% 0%, 100% 50%, 75% 100%, 0% 90%); position: relative; z-index: 10; }
+.window-side { position: absolute; right: 30px; top: 10px; width: 12px; height: 12px; background: #00eaff; border-radius: 2px; box-shadow: 0 0 5px cyan; }
+.stripe-detail { position: absolute; left: 15px; top: 0; bottom: 0; width: 10px; background: #f33; opacity: 0.8; }
+.fin { position: absolute; background: #d32f2f; border: 1px solid #800; z-index: 5; }
+.fin-top { top: -15px; left: 10px; width: 30px; height: 20px; transform: skewX(-30deg); border-radius: 5px 10px 0 0; }
+.fin-bottom { bottom: -15px; left: 10px; width: 30px; height: 20px; transform: skewX(30deg); border-radius: 0 0 10px 5px; }
+.engine-fire { position: absolute; right: 100%; top: 10px; width: 40px; height: 20px; background: linear-gradient(to left, orange, transparent); border-radius: 50px 0 0 50px; filter: blur(5px); opacity: 0.6; transition: 0.2s; }
+.rocket-container.active .engine-fire { width: 100px; background: linear-gradient(to left, cyan, transparent); opacity: 1; }
+.rocket-container.active .hull { filter: drop-shadow(0 0 10px cyan); }
+.obstacle-planet { position: absolute; border-radius: 50%; z-index: 55; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.5); will-change: transform, opacity; }
+
+/* PARTÍCULAS */
+.explosion-particle { position: absolute; z-index: 100; pointer-events: none; border-radius: 50%; }
+.shockwave { position: absolute; z-index: 99; border: 4px solid white; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 0 0 20px white; }
+
+/* --- EFECTOS DEL 404 Y SCROLL --- */
+
+/* 1. Animación de Latido/Respiración para el 404 */
+.breathing-text {
+    animation: pulse-size 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-size {
+    0% { transform: scale(1); text-shadow: 5px 0 red, -5px 0 cyan; }
+    50% { transform: scale(1.15); text-shadow: 10px 0 red, -10px 0 cyan; } 
+    100% { transform: scale(1); text-shadow: 5px 0 red, -5px 0 cyan; }
+}
+
+/* 2. Indicador de Scroll "Alerta Roja" */
+.scroll-warning {
+    margin-top: 2rem;
+    color: #ff3333;
+    font-family: 'Share Tech Mono', monospace; 
+    text-align: center;
     opacity: 0.8;
+    animation: fade-warning 2s infinite;
 }
 
-.fin {
-    position: absolute;
-    background: #d32f2f;
-    border: 1px solid #8b0000;
-    z-index: 5;
+.scroll-warning p {
+    font-size: 1.2rem;
+    letter-spacing: 0.2em;
+    margin: 5px 0;
+    background: rgba(255, 0, 0, 0.1);
+    padding: 5px 10px;
+    border-left: 2px solid red;
+    border-right: 2px solid red;
 }
 
-.fin-top {
-    top: -15px; left: 10px;
-    width: 30px; height: 20px;
-    transform: skewX(-30deg);
-    border-radius: 5px 10px 0 0;
+/* Flechitas animadas */
+.arrow-down {
+    width: 0; 
+    height: 0; 
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #ff3333;
+    margin: 0 auto;
+    animation: arrow-move 1.5s infinite;
 }
 
-.fin-bottom {
-    bottom: -15px; left: 10px;
-    width: 30px; height: 20px;
-    transform: skewX(30deg);
-    border-radius: 0 0 10px 5px;
+@keyframes arrow-move {
+    0% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(5px); opacity: 1; }
+    100% { transform: translateY(0); opacity: 0.5; }
 }
 
-.fin-back {
-    left: -5px; top: 12px;
-    width: 10px; height: 16px;
-    background: #444;
-}
-
-.engine-fire {
-    position: absolute;
-    right: 100%; 
-    top: 10px;
-    width: 40px; height: 20px;
-    background: linear-gradient(to left, #ffaa00, transparent);
-    border-radius: 50px 0 0 50px;
-    filter: blur(5px);
-    opacity: 0.6;
-    transform-origin: right center;
-    transition: all 0.2s;
-}
-
-.rocket-container.active .engine-fire {
-    width: 80px; 
-    background: linear-gradient(to left, #00eaff, transparent); 
-    opacity: 1;
-    filter: blur(8px);
-}
-
-.rocket-container.active .hull {
-    filter: drop-shadow(0 0 10px cyan);
-}
-
-.obstacle-planet {
-    position: absolute; border-radius: 50%; z-index: 55;
-    box-shadow: -5px -5px 10px rgba(0,0,0,0.5) inset;
+@keyframes fade-warning {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
 }
