@@ -48,9 +48,9 @@ let tl = gsap.timeline({
     scrollTrigger: {
         trigger: ".scroll-container",
         start: "top top",
-        end: "+=800%", // Scroll largo
+        end: "+=800%",
         scrub: 1,
-        pin: true, // Fija la historia mientras scrolleas
+        pin: true, 
         onLeave: () => enableGame(),
         onEnterBack: () => disableGame()
     }
