@@ -1,29 +1,38 @@
+/* --- 1. INICIALIZACIÓN Y GSAP --- */
 gsap.registerPlugin(ScrollTrigger);
 
-// --- CONFIGURACIÓN BÁSICA ---
+// Variables globales
 const canvas = document.getElementById('space-canvas');
 const ctx = canvas.getContext('2d');
 const spaceshipEl = document.getElementById('spaceship');
 const gameLayer = document.getElementById('game-layer');
-const hud = document.getElementById('hud');
+const hud = document.getElementById('hud'); // Asegúrate de que este ID exista en tu HTML o quita esta línea
 const crashScreen = document.getElementById('crash-screen');
 
-let width, height;
+// Inicializamos dimensiones para evitar errores
+let width = window.innerWidth;
+let height = window.innerHeight;
+
+// ESTADO DEL JUEGO
 let isGameReady = false;
 let isCrashed = false;
 let isShipActive = false;
 
-const resize = () => {
+// CONFIGURACIÓN DE LA NAVE (Con prevY para rotación lateral)
+let ship = { x: width/2, y: height/2, rot: 0, prevY: height/2 };
+
+// Ajuste de tamaño
+function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
-};
+}
 window.addEventListener('resize', resize);
 resize();
 
-// --- 1. SCROLLYTELLING (GSAP) ---
-gsap.set("#spaceship", { y: "150vh", x: "-50%" });
+/* --- 2. GESTIÓN DE SCROLLYTELLING (RECUPERADO) --- */
+gsap.set("#spaceship", { autoAlpha: 0, xPercent: -50, yPercent: -50, y: "-150vh" });
 
 const tl = gsap.timeline({
     scrollTrigger: {
@@ -42,7 +51,14 @@ tl.to("#section-intro .content-wrapper", { opacity: 1, duration: 1 })
   .to("#section-message .content-wrapper", { opacity: 1, y: 0, duration: 1 })
   .to("#section-message .content-wrapper", { opacity: 0, y: -50, duration: 1 }, "+=0.5")
   .to("#game-layer", { opacity: 1, duration: 0.5 }, "<") 
-  .to("#spaceship", { y: "-50%", duration: 2, ease: "power2.out" });
+  .to("#spaceship", { autoAlpha: 1, y: 0, duration: 2, ease: "power2.out" });
+
+tl.to("#section-intro .content-wrapper", { opacity: 1, y: 0, duration: 1 })
+  .to("#section-intro .content-wrapper", { opacity: 0, scale: 1.5, duration: 1 }, "+=0.5")
+  .to("#section-message .content-wrapper", { opacity: 1, y: 0, duration: 1 })
+  .to("#section-message .content-wrapper", { opacity: 0, y: -100, duration: 1 }, "+=0.5")
+  .to("#game-layer", { opacity: 1, duration: 0.5 }, "<") 
+  .to("#spaceship", { autoAlpha: 1, y: "-50%", duration: 2, ease: "power2.out" });
 
 // --- 2. ESTADO DEL JUEGO ---
 function enableGame() {
@@ -50,27 +66,26 @@ function enableGame() {
     isGameReady = true;
     
     gameLayer.style.pointerEvents = "auto";
-    hud.classList.remove('hidden');
-    
+    if(hud) hud.classList.remove('hidden');
     document.body.style.overflow = "hidden";
     
-    ship.x = width / 2;
-    ship.y = height / 2;
-    mouse.x = width / 2;
-    mouse.y = height / 2;
+    // --- EL TRUCO PARA EVITAR EL SALTO ---
+    gsap.killTweensOf("#spaceship");
+    spaceshipEl.style.top = '0px';
+    spaceshipEl.style.left = '0px';
+    
+    ship.x = window.innerWidth / 2;
+    ship.y = window.innerHeight / 2;
+    ship.prevY = window.innerHeight / 2;
+    
+    mouse.x = window.innerWidth / 2;
+    mouse.y = window.innerHeight / 2;
+
+    updateShip(); 
 }
 
-function disableGame() {
-    isGameReady = false;
-    gameLayer.style.pointerEvents = "none";
-    hud.classList.add('hidden');
-    document.body.style.overflow = "auto";
-}
-
-// --- 3. LÓGICA DEL JUEGO ---
+/* --- 4. LÓGICA Y FÍSICA --- */
 let mouse = { x: width/2, y: height/2 };
-let ship = { x: width/2, y: height/2, rot: 0 };
-const obstacles = [];
 
 window.addEventListener('mousemove', e => {
     if (isGameReady) {
@@ -84,18 +99,24 @@ window.addEventListener('mouseup', () => activateShip(false));
 function activateShip(active) {
     if (!isGameReady || isCrashed) return;
     isShipActive = active;
+    const msg = document.getElementById('status-msg');
+    
     if (active) {
         spaceshipEl.classList.add('active');
-        document.getElementById('status-msg').innerText = "!!! ESQUIVA LOS OBSTÁCULOS !!!";
-        document.getElementById('status-msg').classList.add('text-red-500');
+        if(msg) {
+            msg.innerText = "!!! ESQUIVA LOS OBSTÁCULOS !!!";
+            msg.classList.add('text-red-500');
+        }
     } else {
         spaceshipEl.classList.remove('active');
-        document.getElementById('status-msg').innerText = "SISTEMA EN ESPERA // CLICK PARA ACELERAR";
-        document.getElementById('status-msg').classList.remove('text-red-500');
+        if(msg) {
+            msg.innerText = "SISTEMA EN ESPERA // CLICK PARA ACELERAR";
+            msg.classList.remove('text-red-500');
+        }
     }
 }
 
-// --- 4. RENDER LOOP (Canvas + DOM) ---
+/* --- 5. BUCLE PRINCIPAL --- */
 function animate() {
     ctx.fillStyle = isShipActive ? 'rgba(0,0,0,0.3)' : '#050505';
     ctx.fillRect(0, 0, width, height);
@@ -110,16 +131,26 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
+// --- MOVIMIENTO DE LA NAVE (CORREGIDO PARA PERFIL) ---
 function updateShip() {
-    ship.x += (mouse.x - ship.x) * 0.1;
-    ship.y += (mouse.y - ship.y) * 0.1;
+    ship.x = mouse.x;
+    ship.y = mouse.y;
 
-    let tilt = (mouse.x - ship.x) * 0.15;
-    ship.rot += (tilt - ship.rot) * 0.1;
+    let velocityY = mouse.y - ship.prevY;
 
-    spaceshipEl.style.transform = `translate3d(calc(${ship.x}px - 50%), calc(${ship.y}px - 50%), 0) rotate(${ship.rot}deg)`;
+    let targetRot = velocityY * 1.5;
+
+    targetRot = Math.max(-30, Math.min(30, targetRot));
+
+    ship.rot += (targetRot - ship.rot) * 0.1;
+
+    ship.prevY = mouse.y;
+
+    // 3. Aplicar CSS
+    spaceshipEl.style.transform = `translate3d(${ship.x - 50}px, ${ship.y - 20}px, 0) rotate(${ship.rot}deg)`;
 }
 
+/* --- 6. ELEMENTOS VISUALES (Estrellas y Obstáculos) --- */
 const stars = Array(100).fill().map(() => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
@@ -130,7 +161,7 @@ const stars = Array(100).fill().map(() => ({
 function drawStars() {
     ctx.fillStyle = 'white';
     stars.forEach(star => {
-        let speedFactor = isShipActive ? 20 : 1; 
+        let speedFactor = isShipActive ? 25 : 1; 
         star.x -= star.speed * speedFactor;
         
         if (star.x < 0) {
@@ -140,7 +171,7 @@ function drawStars() {
         
         ctx.beginPath();
         if(isShipActive) {
-            ctx.fillRect(star.x, star.y, star.size * 10, star.size);
+            ctx.fillRect(star.x, star.y, star.size * 15, star.size);
         } else {
             ctx.arc(star.x, star.y, star.size, 0, Math.PI*2);
             ctx.fill();
@@ -148,12 +179,13 @@ function drawStars() {
     });
 }
 
+let obstacles = [];
 let frameCount = 0;
 function manageObstacles() {
     if (!isShipActive) return; 
 
     frameCount++;
-    if (frameCount > 40) {
+    if (frameCount > 40) { 
         createObstacle();
         frameCount = 0;
     }
@@ -166,7 +198,7 @@ function manageObstacles() {
         let dy = ship.y - (obs.y + obs.size/2);
         let distance = Math.sqrt(dx*dx + dy*dy);
 
-        if (distance < (obs.size/2 + 30)) { 
+        if (distance < (obs.size/2 + 20)) { 
             triggerCrash();
         }
 
@@ -186,7 +218,8 @@ function createObstacle() {
     el.style.width = size + 'px';
     el.style.height = size + 'px';
     el.style.top = y + 'px';
-    el.style.background = `hsl(${Math.random()*360}, 70%, 50%)`;
+    const hue = Math.random() * 360;
+    el.style.background = `radial-gradient(circle at 30% 30%, hsl(${hue}, 70%, 60%), hsl(${hue}, 70%, 20%))`;
     
     gameLayer.appendChild(el);
     obstacles.push({ el, x: width, y, size });
@@ -198,7 +231,7 @@ function triggerCrash() {
     isShipActive = false;
     
     spaceshipEl.style.display = 'none'; 
-    crashScreen.classList.remove('hidden'); 
+    if(crashScreen) crashScreen.classList.remove('hidden'); 
     document.body.classList.add('shaking'); 
 
     console.log("CRITICAL FAILURE");

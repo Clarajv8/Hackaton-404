@@ -44,71 +44,98 @@ body {
     100% { transform: translate(0) }
 }
 
-/* --- NAVE --- */
+/* ---------------- */
+
 .rocket-container {
     position: absolute;
-    width: 200px; height: 60px;
+    top: 50%; left: 50%; 
+    transform: translate(-50%, -50%);
+    
+    width: 100px; height: 40px;
     z-index: 60;
     will-change: transform;
-    transform: translate(-50%, 150vh); 
-    left: 50%; 
+    transform-origin: center center;
+    visibility: hidden;
 }
 
-.rocket-container.active {
-    filter: drop-shadow(0 0 15px cyan);
-}
-
-.rocket-body {
+.hull {
     width: 100%; height: 100%;
-    background: #ddd;
-    border-radius: 50% 50% 50% 50% / 20% 20% 20% 20%;
+    background: linear-gradient(to bottom, #eee 0%, #999 50%, #555 100%);
+    
+    clip-path: polygon(0% 10%, 75% 0%, 100% 50%, 75% 100%, 0% 90%);
+    
     position: relative;
-    border: 2px solid #555;
-    overflow: hidden;
+    z-index: 10;
 }
 
-.logo-404 {
+.window-side {
     position: absolute;
-    top: 15px; left: 60px;
-    font-family: 'Black Ops One';
-    color: #333;
-    font-size: 24px;
+    right: 30px; top: 10px; 
+    width: 12px; height: 12px;
+    background: #00eaff;
+    border-radius: 2px; 
+    box-shadow: 0 0 5px #00eaff;
 }
 
-.window {
+.stripe-detail {
     position: absolute;
-    right: 40px; top: 10px;
-    width: 20px; height: 20px;
-    background: #00aaff;
-    border-radius: 50%;
-    box-shadow: inset 2px 2px 5px white;
-}
-
-.wing-top, .wing-bottom {
-    position: absolute;
-    width: 40px; height: 30px;
+    left: 15px; top: 0; bottom: 0;
+    width: 10px;
     background: #ff3333;
-    border: 2px solid #900;
-    z-index: -1;
+    opacity: 0.8;
 }
-.wing-top { top: -20px; left: 20px; transform: skewX(-40deg); border-radius: 10px 0 0 0; }
-.wing-bottom { bottom: -20px; left: 20px; transform: skewX(40deg); border-radius: 0 0 0 10px; }
-.wing-back { position: absolute; left: -10px; top: 15px; width: 15px; height: 30px; background: #900; }
 
-.rocket-flame {
+.fin {
     position: absolute;
-    left: -30px; top: 15px;
-    width: 40px; height: 30px;
-    background: orange;
-    border-radius: 50%;
-    filter: blur(10px);
-    opacity: 0;
-    transition: opacity 0.2s;
+    background: #d32f2f;
+    border: 1px solid #8b0000;
+    z-index: 5;
 }
-.rocket-container.active .rocket-flame { opacity: 1; animation: flameFlicker 0.1s infinite; }
-@keyframes flameFlicker { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
 
-/* Obstáculos */
+.fin-top {
+    top: -15px; left: 10px;
+    width: 30px; height: 20px;
+    transform: skewX(-30deg);
+    border-radius: 5px 10px 0 0;
+}
+
+.fin-bottom {
+    bottom: -15px; left: 10px;
+    width: 30px; height: 20px;
+    transform: skewX(30deg);
+    border-radius: 0 0 10px 5px;
+}
+
+.fin-back {
+    left: -5px; top: 12px;
+    width: 10px; height: 16px;
+    background: #444;
+}
+
+.engine-fire {
+    position: absolute;
+    right: 100%; 
+    top: 10px;
+    width: 40px; height: 20px;
+    background: linear-gradient(to left, #ffaa00, transparent);
+    border-radius: 50px 0 0 50px;
+    filter: blur(5px);
+    opacity: 0.6;
+    transform-origin: right center;
+    transition: all 0.2s;
+}
+
+.rocket-container.active .engine-fire {
+    width: 80px; 
+    background: linear-gradient(to left, #00eaff, transparent); 
+    opacity: 1;
+    filter: blur(8px);
+}
+
+.rocket-container.active .hull {
+    filter: drop-shadow(0 0 10px cyan);
+}
+
 .obstacle-planet {
     position: absolute; border-radius: 50%; z-index: 55;
     box-shadow: -5px -5px 10px rgba(0,0,0,0.5) inset;
