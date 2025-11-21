@@ -17,33 +17,45 @@ const introHighScore = document.getElementById('intro-highscore');
 let width = window.innerWidth;
 let height = window.innerHeight;
 
-// VARS
+// --- VARS ---
+let isGameReady = false;
+let isCrashed = false;
+let isShipActive = false;
+let ship = { x: width/2, y: height/2, rot: 0, prevY: height/2 };
+let mouse = { x: width/2, y: height/2 };
+
 let gameDifficulty = 1; 
 let score = 0;
 let highScore = localStorage.getItem('warpRunHighScore') || 0;
+
 highScoreDisplay.innerText = Math.floor(highScore);
 if(introHighScore) introHighScore.innerText = Math.floor(highScore);
 
+// --- RESIZE ---
 const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
+    if (isGameReady) {
+        ship.x = Math.max(50, Math.min(width - 50, ship.x));
+        ship.y = Math.max(25, Math.min(height - 25, ship.y));
+        mouse.x = ship.x;
+        mouse.y = ship.y;
+        spaceshipEl.style.transform = `translate3d(${ship.x - 50}px, ${ship.y - 20}px, 0) rotate(${ship.rot}deg)`;
+    } else {
+        if(!gsap.isTweening("#spaceship")) gsap.set("#spaceship", { x: width / 2 - 50 });
+    }
 };
 window.addEventListener('resize', resize);
 resize();
 
-// --- 1. SCROLLYTELLING ---
+// --- SCROLLYTELLING ---
 const startY = -200; 
-const centerX = width / 2 - 50; 
-const centerY = height / 2 - 20; 
-
-// Inicialización
-gsap.set("#spaceship", { x: centerX, y: startY, autoAlpha: 1 });
+gsap.set("#spaceship", { x: () => window.innerWidth / 2 - 50, y: startY, autoAlpha: 1 });
 gsap.set("#game-layer", { autoAlpha: 0 }); 
 gsap.set("#text-404", { autoAlpha: 0, scale: 0.5 });
 
-// TIMELINE
 let tl = gsap.timeline({
     scrollTrigger: {
         trigger: ".scroll-container",
@@ -51,6 +63,7 @@ let tl = gsap.timeline({
         end: "+=600%",
         scrub: 1,
         pin: true, 
+        invalidateOnRefresh: true,
         onLeave: () => enableGame(),
         onEnterBack: () => disableGame()
     }
@@ -61,39 +74,26 @@ tl.to("#text-approach", { opacity: 0, duration: 1 })
   .to("#text-404", { autoAlpha: 1, scale: 1, duration: 1, ease: "elastic.out(1, 0.75)" })
   .to("#text-404", { autoAlpha: 0, duration: 1, delay: 1 })
   .to("#game-layer", { autoAlpha: 1, duration: 0.5 })
-  .fromTo("#spaceship", 
-      { x: centerX, y: startY }, 
-      { x: centerX, y: centerY, duration: 3, ease: "power2.out" }
-  );
+  .fromTo("#spaceship", { x: () => window.innerWidth / 2 - 50, y: startY }, { x: () => window.innerWidth / 2 - 50, y: () => window.innerHeight / 2 - 20, duration: 3, ease: "power2.out" });
 
-// --- 2. GAME LOGIC ---
-let isGameReady = false;
-let isCrashed = false;
-let isShipActive = false;
-let ship = { x: width/2, y: height/2, rot: 0, prevY: height/2 };
-let mouse = { x: width/2, y: height/2 };
-
+// --- GAME LOGIC ---
 function enableGame() {
     if (isGameReady || isCrashed) return;
     isGameReady = true;
-    
     gameLayer.style.pointerEvents = "auto";
     hud.classList.remove('hidden');
     scoreboard.classList.remove('hidden'); 
     document.body.style.overflow = "hidden";
     canvas.style.opacity = 1; 
-    
     ship.x = width / 2; ship.y = height / 2;
     mouse.x = width / 2; mouse.y = height / 2;
     gameDifficulty = 1; score = 0; scoreDisplay.innerText = "0";
-    
     gsap.killTweensOf("#spaceship");
     spaceshipEl.style.opacity = 1;
     spaceshipEl.style.visibility = 'visible';
     spaceshipEl.style.display = 'block';
     gameLayer.style.opacity = 1;
     gameLayer.style.visibility = 'visible';
-    
     updateShip();
 }
 
@@ -105,7 +105,6 @@ function disableGame() {
     document.body.style.overflow = "auto";
 }
 
-// --- 3. INPUTS ---
 window.addEventListener('mousedown', () => activateShip(true));
 window.addEventListener('mouseup', () => activateShip(false));
 window.addEventListener('touchstart', () => activateShip(true), {passive: false});
@@ -117,12 +116,15 @@ function activateShip(active) {
     if (!isGameReady || isCrashed) return;
     isShipActive = active;
     const msg = document.getElementById('status-msg');
+    const hudPanel = document.querySelector('.hud-panel');
     if (active) {
         spaceshipEl.classList.add('active');
-        msg.innerText = "¡¡¡ ACELERANDO - CUIDADO !!!"; msg.classList.add('text-red-500');
+        if(msg) msg.innerText = ">>> IMPULSORES AL MÁXIMO <<<";
+        if(hudPanel) hudPanel.classList.add('warning');
     } else {
         spaceshipEl.classList.remove('active');
-        msg.innerText = "SISTEMA MANUAL // CLICK PARA ACELERAR"; msg.classList.remove('text-red-500');
+        if(msg) msg.innerText = "MANTÉN PULSADO PARA IMPULSAR 🚀";
+        if(hudPanel) hudPanel.classList.remove('warning');
         if(gameDifficulty > 1) gameDifficulty -= 0.5;
         if(gameDifficulty < 1) gameDifficulty = 1;
     }
@@ -141,18 +143,14 @@ function updateShip() {
     spaceshipEl.style.transform = `translate3d(${ship.x - 50}px, ${ship.y - 20}px, 0) rotate(${ship.rot}deg)`;
 }
 
-// --- 4. ANIMATION LOOP ---
 const stars = Array(60).fill().map(() => ({ x: Math.random()*width, y: Math.random()*height, speed: Math.random()+0.5 }));
-
 function animate() {
     ctx.fillStyle = isShipActive ? 'rgba(0,0,0,0.2)' : '#050505';
     ctx.fillRect(0, 0, width, height);
-
     if (isShipActive && isGameReady && !isCrashed) {
         gameDifficulty += 0.002; if(gameDifficulty > 4) gameDifficulty = 4; 
         score += (gameDifficulty * 0.5); scoreDisplay.innerText = Math.floor(score);
     }
-
     ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
     stars.forEach(s => {
         let currentSpeed = s.speed * (isShipActive ? (10 * gameDifficulty) : 1);
@@ -163,11 +161,7 @@ function animate() {
         else ctx.arc(s.x, s.y, Math.random()*2, 0, Math.PI*2);
         ctx.fill();
     });
-
-    if(isGameReady && !isCrashed) {
-        updateShip();
-        manageObstacles();
-    }
+    if(isGameReady && !isCrashed) { updateShip(); manageObstacles(); }
     requestAnimationFrame(animate);
 }
 
@@ -196,7 +190,6 @@ function manageObstacles() {
     });
 }
 
-// --- 5. CRASH LOGIC ---
 function createExplosion(x, y) {
     const shockwave = document.createElement('div');
     shockwave.className = 'shockwave';
@@ -219,30 +212,60 @@ function createExplosion(x, y) {
     }
 }
 
+// --- 5. CHOQUE CORREGIDO Y SUAVE ---
 function triggerCrash() {
-    isCrashed = true; isShipActive = false; gameDifficulty = 1; 
+    isCrashed = true;
+    isShipActive = false;
+    gameDifficulty = 1; 
+    
     spaceshipEl.style.display = 'none';
+    
     createExplosion(ship.x, ship.y);
+    
+    hud.classList.add('hidden');
+
     gsap.to('.obstacle-planet', { scale: 0, opacity: 0, duration: 0.6, ease: "power4.in", stagger: 0.02 });
+
     setTimeout(() => {
         const finalScore = Math.floor(score);
+        
         if (finalScore > highScore) {
-            highScore = finalScore; localStorage.setItem('warpRunHighScore', highScore); highScoreDisplay.innerText = highScore;
+            highScore = finalScore;
+            localStorage.setItem('warpRunHighScore', highScore);
+            highScoreDisplay.innerText = highScore;
             if(introHighScore) introHighScore.innerText = highScore;
+            
             recordTextContent.innerText = `¡FELICIDADES! RÉCORD: ${finalScore}`;
             newRecordMsg.classList.remove('hidden');
         } else {
-            crashScreen.classList.remove('hidden');
+            crashScreen.classList.remove('hidden'); 
+            
+            requestAnimationFrame(() => {
+                crashScreen.classList.add('active');
+            });
         }
+
+        // 6. RESET
         setTimeout(() => {
-            crashScreen.classList.add('hidden'); newRecordMsg.classList.add('hidden');
-            isGameReady = false; gameLayer.style.pointerEvents = "none";
-            hud.classList.add('hidden'); scoreboard.classList.add('hidden');
+            crashScreen.classList.remove('active');
+            crashScreen.classList.add('hidden');
+            newRecordMsg.classList.add('hidden');
+            
+            isGameReady = false;
+            gameLayer.style.pointerEvents = "none";
+            hud.classList.add('hidden');
+            scoreboard.classList.add('hidden');
             document.body.style.overflow = "auto"; 
-            obstacles.forEach(o => o.el.remove()); obstacles = []; isCrashed = false;
+            
+            obstacles.forEach(o => o.el.remove());
+            obstacles = [];
+            isCrashed = false;
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 3000);
-    }, 800);
+            
+        }, 3500); 
+
+    }, 500);
 }
 
 animate();
