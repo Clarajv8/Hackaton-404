@@ -18,6 +18,7 @@ const blackOverlay = document.getElementById('black-overlay');
 const postVictoryText = document.getElementById('post-victory-text');
 const secondLineText = document.querySelector('.setup-fade-in');
 const finalGlitchScreen = document.getElementById('final-glitch-screen');
+const playNowBtn = document.getElementById('play-now-btn');
 
 let width = window.innerWidth;
 let height = window.innerHeight;
@@ -44,8 +45,25 @@ const missionGoalEl = document.querySelector('.mission-goal');
 highScoreDisplay.innerText = Math.floor(highScore);
 if(introHighScore) introHighScore.innerText = Math.floor(highScore);
 
-if (IS_INFINITE_UNLOCKED && missionGoalEl) {
-    missionGoalEl.style.display = 'none';
+if (IS_INFINITE_UNLOCKED) {
+    if (missionGoalEl) missionGoalEl.style.display = 'none';
+    if (playNowBtn) playNowBtn.classList.remove('hidden'); 
+} else {
+    if (playNowBtn) playNowBtn.classList.add('hidden');
+}
+
+function scrollToGame() {
+    if (!isInfiniteModeUnlocked() || !tl.scrollTrigger) return;
+    
+    gsap.to(window, {
+        duration: 1, 
+        scrollTo: tl.scrollTrigger.end,
+        ease: "power2.inOut"
+    });
+}
+
+if (playNowBtn) {
+    playNowBtn.addEventListener('click', scrollToGame);
 }
 
 const resize = () => {

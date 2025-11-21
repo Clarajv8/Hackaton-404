@@ -611,6 +611,26 @@ body.game-active a {
     text-transform: uppercase;
 }
 
+.quick-play-btn {
+    position: relative;
+    font-family: 'Black Ops One', cursive;
+    padding: 10px 40px;
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    color: var(--color-main); 
+    background: rgba(0, 255, 64, 0.1);
+    border: 2px solid var(--color-main);
+    box-shadow: 0 0 15px var(--color-glow);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 40;
+    pointer-events: auto !important;
+}
+.quick-play-btn:hover {
+    background: var(--color-main);
+    color: black;
+}
+
 @keyframes glitch-anim-1 {
     0% {
         clip-path: inset(20% 0 80% 0);
