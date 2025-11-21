@@ -1,6 +1,5 @@
 gsap.registerPlugin(ScrollTrigger);
 
-// --- SETUP ---
 const canvas = document.getElementById('space-canvas');
 const ctx = canvas.getContext('2d');
 const spaceshipEl = document.getElementById('spaceship');
@@ -27,7 +26,6 @@ function isInfiniteModeUnlocked() {
     return localStorage.getItem('infiniteMode') === 'true';
 }
 
-// --- VARS ESTADO ---
 let isGameReady = false;
 let isCrashed = false;
 let isShipActive = false;
@@ -49,7 +47,6 @@ if (IS_INFINITE_UNLOCKED && missionGoalEl) {
     missionGoalEl.style.display = 'none';
 }
 
-// --- RESIZE ---
 const resize = () => {
     width = window.innerWidth;
     height = window.innerHeight;
@@ -69,7 +66,6 @@ const resize = () => {
 window.addEventListener('resize', resize);
 resize();
 
-// --- SCROLLYTELLING ---
 const startY = -200; 
 gsap.set("#spaceship", { x: () => window.innerWidth / 2 - 50, y: startY, autoAlpha: 1 });
 gsap.set("#game-layer", { autoAlpha: 0 }); 
@@ -96,7 +92,6 @@ tl.to("#text-approach", { opacity: 0, duration: 1 })
      .to("#game-layer", { autoAlpha: 1, duration: 0.5 })
      .fromTo("#spaceship", { x: () => window.innerWidth / 2 - 50, y: startY }, { x: () => window.innerWidth / 2 - 50, y: () => window.innerHeight / 2 - 20, duration: 3, ease: "power2.out" });
 
-// --- LOGICA ---
 function enableGame() {
     if (isCrashed) isCrashed = false; 
      if (isGameReady) return;
@@ -142,7 +137,6 @@ function disableGame() {
  document.body.style.overflow = "auto";
 }
 
-// --- INPUTS ---
 const startThrust = (e) => {
     if (!isGameReady || isCrashed || isLanding) return;
     if(e.cancelable) e.preventDefault(); 
@@ -191,7 +185,6 @@ function updateShip() {
     spaceshipEl.style.transform = `translate3d(${ship.x - 50}px, ${ship.y - 20}px, 0) rotate(${ship.rot}deg)`;
 }
 
-// --- LOOP ---
 const stars = Array(60).fill().map(() => ({ x: Math.random()*width, y: Math.random()*height, speed: Math.random()+0.5 }));
 function animate() {
     ctx.fillStyle = isShipActive ? 'rgba(0,0,0,0.2)' : '#050505';
@@ -253,7 +246,6 @@ function manageObstacles() {
     });
 }
 
-// --- VICTORIA Y SECUENCIA FINAL DRAMÁTICA ---
 function startLandingSequence() {
     isLanding = true; isShipActive = false; 
     hud.classList.add('hidden'); successMsg.classList.remove('hidden');
@@ -279,7 +271,6 @@ function startLandingSequence() {
     });
 }
 
-// --- COREOGRAFÍA DEL FINAL META (CORREGIDO EL FADE-IN) ---
 function runPostVictorySequence() {
     scoreboard.classList.add('hidden'); 
     
@@ -322,14 +313,12 @@ function restartGameLoop() {
     postVictoryText.style.pointerEvents = 'none';
     secondLineText.classList.remove('fade-in-now');
 
-    // SCROLL
     window.scrollTo({ top: 0, behavior: 'auto' });
     gsap.set("#planet-earth", { right: -350 }); 
     gsap.set(spaceshipEl, { scale: 1, opacity: 1, rotation: 0 });
     ScrollTrigger.refresh();
 }
 
-// --- CRASH ---
 
 function createExplosion(x, y) {
     const shockwave = document.createElement('div');
@@ -388,5 +377,4 @@ function triggerCrash() {
         }, 3500); 
     }, 800);
 }
-
 animate();
