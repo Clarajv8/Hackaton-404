@@ -613,22 +613,48 @@ body.game-active a {
 
 .quick-play-btn {
     position: relative;
-    font-family: 'Black Ops One', cursive;
+    font-family: 'VT323', 'Press Start 2P', monospace;
     padding: 10px 40px;
     margin-top: 2rem;
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: var(--color-main); 
-    background: rgba(0, 255, 64, 0.1);
+    background: rgba(0, 0, 0, 0.7); 
+    backdrop-filter: blur(2px); 
     border: 2px solid var(--color-main);
-    box-shadow: 0 0 15px var(--color-glow);
+    box-shadow: 0 0 15px var(--color-glow), 0 0 5px rgba(0,255,64,0.5) inset; 
     cursor: pointer;
-    transition: all 0.3s;
-    z-index: 40;
-    pointer-events: auto !important;
+    transition: all 0.3s ease-in-out; 
+    z-index: 40; 
+    pointer-events: auto !important; 
+    overflow: hidden; 
+    animation: subtleJitter 2s infinite alternate ease-in-out;
 }
 .quick-play-btn:hover {
     background: var(--color-main);
     color: black;
+    box-shadow: 0 0 25px var(--color-glow); 
+    animation: hoverTremor 0.15s infinite linear; 
+    transform: scale(1.02); 
+}
+
+@keyframes subtleJitter {
+    0% { transform: translateX(0px) translateY(0px) rotate(0deg); }
+    20% { transform: translateX(-0.5px) translateY(0.5px) rotate(0.2deg); }
+    40% { transform: translateX(0.5px) translateY(-0.5px) rotate(-0.2deg); }
+    60% { transform: translateX(-0.2px) translateY(0.2px) rotate(0.1deg); }
+    80% { transform: translateX(0.2px) translateY(-0.2px) rotate(-0.1deg); }
+    100% { transform: translateX(0px) translateY(0px) rotate(0deg); }
+}
+@keyframes hoverTremor {
+    0%, 100% {
+        transform: translate(0px, 0px) rotate(0deg);
+    }
+    33% {
+        transform: translate(-1px, 0.5px) rotate(0.1deg); /* Mueve a la izquierda y arriba */
+    }
+    66% {
+        transform: translate(1px, -0.5px) rotate(-0.1deg); /* Mueve a la derecha y abajo */
+    }
 }
 
 @keyframes glitch-anim-1 {
