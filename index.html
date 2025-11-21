@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,13 +21,13 @@
             <div class="sci-fi-panel">
                 <div class="corner top-left"></div><div class="corner top-right"></div>
                 <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
-                <div class="panel-header"><span class="status-dot"></span> SISTEMA DE NAVEGACIÓN</div>
-                <h2 class="main-title">DESTINO CONFIRMADO</h2>
+                <div class="panel-header"><span class="status-dot"></span> NAVIGATION SYSTEM</div>
+                <h2 class="main-title">DESTINATION CONFIRMED</h2>
                 <div class="panel-divider"></div>
-                <p class="sub-title blink">INICIANDO SECUENCIA DE ATERRIZAJE...</p>
-                <p class="coords" style="color: #ffd700; font-size: 1.2rem;">RÉCORD ACTUAL: <span id="intro-highscore">0</span></p>
+                <p class="sub-title blink">INITIATING LANDING SEQUENCE...</p>
+                <p class="coords" style="color: #ffd700; font-size: 1.2rem;">CURRENT HIGH SCORE: <span id="intro-highscore">0</span></p>
             </div>
-            <p class="scroll-hint-text">▼ DESLIZA PARA DESCENDER ▼</p>
+            <p class="scroll-hint-text">▼ SCROLL TO DESCEND ▼</p>
         </div>
 
         <div id="text-404" class="story-element absolute-center opacity-0 z-40 text-center pointer-events-none flex flex-col items-center justify-center">
@@ -35,11 +35,11 @@
                 <span class="breathing-text inline-block">404</span>
             </h1>
             <p class="text-2xl text-red-500 bg-black/80 inline-block px-6 py-2 border border-red-500 mb-8 tracking-widest">
-                ⚠ ERROR CRÍTICO: REALIDAD NO ENCONTRADA
+                ⚠ CRITICAL ERROR: PLANET NOT FOUND
             </p>
             <div class="scroll-warning">
                 <div class="arrow-down"></div>
-                <p>DESLIZA PARA FORZAR REINICIO DE SISTEMA</p>
+                <p>SCROLL TO FORCE SYSTEM REBOOT</p>
                 <div class="arrow-down"></div>
             </div>
         </div>
@@ -51,19 +51,19 @@
 
         <div id="success-msg" class="fixed inset-0 flex items-center justify-center z-[120] hidden pointer-events-none">
             <div class="text-center">
-                <h1 class="text-5xl md:text-6xl text-white font-bold mb-4 drop-shadow-[0_0_20px_cyan]" style="font-family: 'Black Ops One';">¡MISIÓN CUMPLIDA!</h1>
-                <p class="text-xl md:text-2xl text-cyan-300 font-mono tracking-widest">ATERRIZAJE INICIADO...</p>
+                <h1 class="text-5xl md:text-6xl text-white font-bold mb-4 drop-shadow-[0_0_20px_#00ff00]" style="font-family: 'Black Ops One';">MISSION COMPLETE!</h1>
+                <p class="text-xl md:text-2xl text-green-300 font-mono tracking-widest">LANDING SEQUENCE INITIATED...</p>
             </div>
         </div>
 
         <div id="scoreboard" class="absolute top-6 right-6 text-right font-mono hidden select-none z-[60]">
-            <div class="mission-goal">OBJETIVO: TIERRA (5000)</div>
-            <p class="text-green-500 text-xl opacity-80">RÉCORD: <span id="highscore-display">0</span></p>
-            <p class="text-white text-4xl mt-1 drop-shadow-md">PUNTOS: <span id="score-display">0</span></p>
+            <div class="mission-goal">TARGET: EARTH (1000)</div>
+            <p class="text-green-500 text-xl opacity-80">HIGH SCORE: <span id="highscore-display">0</span></p>
+            <p class="text-white text-4xl mt-1 drop-shadow-md">SCORE: <span id="score-display">0</span></p>
         </div>
         
         <div id="new-record-msg" class="fixed inset-0 flex items-center justify-center z-[120] hidden bg-black/80">
-            <h1 id="record-text-content" class="text-5xl md:text-7xl text-yellow-400 font-bold animate-bounce text-center px-4" style="font-family: 'Black Ops One';">¡¡ NUEVO RÉCORD !!</h1>
+            <h1 id="record-text-content" class="text-5xl md:text-7xl text-yellow-400 font-bold animate-bounce text-center px-4" style="font-family: 'Black Ops One';">!! NEW HIGH SCORE !!</h1>
         </div>
         
         <div class="rocket-container" id="spaceship">
@@ -74,23 +74,23 @@
         
         <div class="absolute bottom-10 w-full flex justify-center z-50 hidden" id="instr">
             <div class="hud-panel">
-                <p id="status-msg" class="text-xl tracking-widest">MANTÉN PULSADO PARA IMPULSAR 🚀</p>
+                <p id="status-msg" class="text-xl tracking-widest">HOLD TO THRUST 🚀</p>
             </div>
         </div>
         
         <div id="crash-screen" class="fixed inset-0 flex items-center justify-center z-[100]">
             <div class="text-center">
-                <h1 class="text-6xl font-bold text-white mb-4 glitch-text">SEÑAL PERDIDA</h1>
-                <p class="text-white text-xl tracking-widest">INTENTANDO RESTABLECER CONEXIÓN...</p>
+                <h1 class="text-6xl font-bold text-white mb-4 glitch-text">GAME OVER</h1>
+                <p class="text-white text-xl tracking-widest">ATTEMPTING TO RESTABLISH CONNECTION...</p>
             </div>
         </div>
 
         <div id="post-victory-text" class="fixed inset-0 flex flex-col items-center justify-center z-[210] pointer-events-none opacity-0 transition-opacity duration-1000">
     
-            <h1 class="text-6xl md:text-8xl text-white font-bold mb-8" style="font-family: 'Black Ops One'; text-shadow: 0 0 20px rgba(255,255,255,0.5);">PERO TÚ...</h1>
+            <h1 class="text-6xl md:text-8xl text-white font-bold mb-8" style="font-family: 'Black Ops One'; text-shadow: 0 0 20px rgba(255,255,255,0.5);">BUT YOU...</h1>
             
             <p class="text-5xl md:text-7xl terminal-blue-text opacity-0 transition-opacity duration-2000 delay-1000 setup-fade-in">
-                SIGUES AQUÍ...
+                ARE STILL HERE...
             </p>
 
         </div>
