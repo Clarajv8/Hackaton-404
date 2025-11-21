@@ -620,7 +620,7 @@ body.game-active a {
     color: var(--color-main); 
     background: rgba(0, 0, 0, 0.7); 
     backdrop-filter: blur(2px); 
-    border: 2px solid var(--color-main);
+    border: 1px solid var(--color-main);
     box-shadow: 0 0 15px var(--color-glow), 0 0 5px rgba(0,255,64,0.5) inset; 
     cursor: pointer;
     transition: all 0.3s ease-in-out; 
