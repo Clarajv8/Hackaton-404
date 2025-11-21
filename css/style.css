@@ -73,6 +73,14 @@ body.game-active a {
     width: 100%;
 }
 
+.coords {
+    color: yellow;
+}
+
+#post-victory-text p {
+    padding: 0 4rem;
+}
+
 #giant-mars {
     width: 120vmax;
     height: 120vmax;
@@ -709,6 +717,10 @@ body.game-active a {
     }
 }
 
+
+
+
+
 @media (max-width: 768px) {
     .glitch-title {
         font-size: 25vw;
@@ -736,7 +748,7 @@ body.game-active a {
     }
 
     #instr {
-        bottom: 20px;
+        bottom: 120px;
     }
 
     #scoreboard {
@@ -747,7 +759,17 @@ body.game-active a {
     }
 
     .rocket-container {
+       position: absolute;
+       transform: translate(-50%, -50%);
+       visibility: visible;
+       opacity: 1;
+       pointer-events: none; /* Para que no bloquee los toques */
+
+    }
+
+    .scroll-warning {
         transform: scale(0.7);
+        margin-top: 1rem;
     }
 
     #new-record-msg h1 {

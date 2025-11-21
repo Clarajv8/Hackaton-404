@@ -19,13 +19,15 @@
         
         <div id="text-approach" class="story-element text-center flex flex-col items-center z-30">
             <div class="sci-fi-panel">
-                <div class="corner top-left"></div><div class="corner top-right"></div>
-                <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
                 <div class="panel-header"><span class="status-dot"></span> NAVIGATION SYSTEM</div>
                 <h2 class="main-title">DESTINATION CONFIRMED</h2>
                 <div class="panel-divider"></div>
                 <p class="sub-title blink">INITIATING LANDING SEQUENCE...</p>
-                <p class="coords" style="color: #ffd700; font-size: 1.2rem;">CURRENT HIGH SCORE: <span id="intro-highscore">0</span></p>
+                <p class="coords">CURRENT HIGH SCORE: <span id="intro-highscore">0</span></p>
             </div>
             <p class="scroll-hint-text">▼ SCROLL TO DESCEND ▼</p>
         </div>
@@ -51,7 +53,7 @@
 
         <div id="success-msg" class="fixed inset-0 flex items-center justify-center z-[120] hidden pointer-events-none">
             <div class="text-center">
-                <h1 class="text-5xl md:text-6xl text-white font-bold mb-4 drop-shadow-[0_0_20px_#00ff00]" style="font-family: 'Black Ops One';">MISSION COMPLETE!</h1>
+                <h1 class="text-5xl md:text-6xl text-white font-bold mb-4 drop-shadow-[0_0_20px_#00ff00]">MISSION COMPLETE!</h1>
                 <p class="text-xl md:text-2xl text-green-300 font-mono tracking-widest">LANDING SEQUENCE INITIATED...</p>
             </div>
         </div>
@@ -63,7 +65,7 @@
         </div>
         
         <div id="new-record-msg" class="fixed inset-0 flex items-center justify-center z-[120] hidden bg-black/80">
-            <h1 id="record-text-content" class="text-5xl md:text-7xl text-yellow-400 font-bold animate-bounce text-center px-4" style="font-family: 'Black Ops One';">!! NEW HIGH SCORE !!</h1>
+            <h1 id="record-text-content" class="text-5xl md:text-7xl text-yellow-400 font-bold animate-bounce text-center px-4">!! NEW HIGH SCORE !!</h1>
         </div>
         
         <div class="rocket-container" id="spaceship">
@@ -86,13 +88,10 @@
         </div>
 
         <div id="post-victory-text" class="fixed inset-0 flex flex-col items-center justify-center z-[210] pointer-events-none opacity-0 transition-opacity duration-1000">
-    
-            <h1 class="text-6xl md:text-8xl text-white font-bold mb-8" style="font-family: 'Black Ops One'; text-shadow: 0 0 20px rgba(255,255,255,0.5);">BUT YOU...</h1>
-            
+            <h1 class="text-6xl md:text-8xl text-white font-bold mb-8">BUT YOU...</h1>
             <p class="text-5xl md:text-7xl terminal-blue-text opacity-0 transition-opacity duration-2000 delay-1000 setup-fade-in">
                 ARE STILL HERE...
             </p>
-
         </div>
 
         <div id="final-glitch-screen" class="fixed inset-0 flex items-center justify-center z-[220] pointer-events-none opacity-0 bg-black">
