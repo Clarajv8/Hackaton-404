@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Mars Not Found</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -31,58 +31,61 @@
         </div>
 
         <div id="text-404" class="story-element absolute-center opacity-0 z-40 text-center pointer-events-none flex flex-col items-center justify-center">
-            
             <h1 class="glitch-title text-9xl text-white mb-4">
                 <span class="breathing-text inline-block">404</span>
             </h1>
-            
             <p class="text-2xl text-red-500 bg-black/80 inline-block px-6 py-2 border border-red-500 mb-8 tracking-widest">
                 ⚠ ERROR CRÍTICO: REALIDAD NO ENCONTRADA
             </p>
-
             <div class="scroll-warning">
                 <div class="arrow-down"></div>
                 <p>DESLIZA PARA FORZAR REINICIO DE SISTEMA</p>
                 <div class="arrow-down"></div>
             </div>
-
         </div>
     </div>
 
     <div id="game-layer" class="fixed inset-0 w-full h-full z-50 pointer-events-none opacity-0 overflow-hidden">
+        
+        <div id="planet-earth"></div>
+
+        <div id="success-msg" class="fixed inset-0 flex items-center justify-center z-[120] hidden pointer-events-none">
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl text-white font-bold mb-4 drop-shadow-[0_0_20px_cyan]" style="font-family: 'Black Ops One';">¡MISIÓN CUMPLIDA!</h1>
+                <p class="text-xl md:text-2xl text-cyan-300 font-mono tracking-widest">ATERRIZAJE INICIADO...</p>
+            </div>
+        </div>
+
         <div id="scoreboard" class="absolute top-6 right-6 text-right font-mono hidden select-none z-[60]">
+            <div class="mission-goal">OBJETIVO: TIERRA (5000)</div>
             <p class="text-green-500 text-xl opacity-80">RÉCORD: <span id="highscore-display">0</span></p>
             <p class="text-white text-4xl mt-1 drop-shadow-md">PUNTOS: <span id="score-display">0</span></p>
         </div>
+        
         <div id="new-record-msg" class="fixed inset-0 flex items-center justify-center z-[120] hidden bg-black/80">
             <h1 id="record-text-content" class="text-5xl md:text-7xl text-yellow-400 font-bold animate-bounce text-center px-4" style="font-family: 'Black Ops One';">¡¡ NUEVO RÉCORD !!</h1>
         </div>
+        
         <div class="rocket-container" id="spaceship">
-            <div class="hull">
-                <div class="window-side"></div>
-                <div class="stripe-detail"></div>
-                
-                <span class="hull-text">404</span>
-                
-            </div>
-            <div class="fin fin-top"></div>
-            <div class="fin fin-bottom"></div>
-            <div class="fin fin-back"></div>
+            <div class="hull"><div class="window-side"></div><div class="stripe-detail"></div><span class="hull-text">404</span></div>
+            <div class="fin fin-top"></div><div class="fin fin-bottom"></div><div class="fin fin-back"></div>
             <div class="engine-fire"></div>
         </div>
+        
         <div class="absolute bottom-10 w-full flex justify-center z-50 hidden" id="instr">
             <div class="hud-panel">
-                <p id="status-msg" class="text-xl tracking-widest">
-                    MANTÉN PULSADO PARA IMPULSAR 🚀
-                </p>
+                <p id="status-msg" class="text-xl tracking-widest">MANTÉN PULSADO PARA IMPULSAR 🚀</p>
             </div>
         </div>
+        
         <div id="crash-screen" class="fixed inset-0 flex items-center justify-center z-[100]">
             <div class="text-center">
-                <h1 class="text-6xl font-bold text-white mb-4 glitch-text">GAME OVER</h1>
+                <h1 class="text-6xl font-bold text-white mb-4 glitch-text">SEÑAL PERDIDA</h1>
                 <p class="text-white text-xl tracking-widest">INTENTANDO RESTABLECER CONEXIÓN...</p>
             </div>
         </div>
+
+        <div id="black-overlay" class="fixed inset-0 bg-black z-[200] pointer-events-none opacity-0 transition-opacity duration-1000"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>

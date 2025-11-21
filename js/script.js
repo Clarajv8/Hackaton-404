@@ -13,14 +13,18 @@ const highScoreDisplay = document.getElementById('highscore-display');
 const newRecordMsg = document.getElementById('new-record-msg');
 const recordTextContent = document.getElementById('record-text-content');
 const introHighScore = document.getElementById('intro-highscore');
+const planetEarth = document.getElementById('planet-earth');
+const successMsg = document.getElementById('success-msg');
+const blackOverlay = document.getElementById('black-overlay'); 
 
 let width = window.innerWidth;
 let height = window.innerHeight;
 
-// --- VARS ---
+// --- VARS ESTADO ---
 let isGameReady = false;
 let isCrashed = false;
 let isShipActive = false;
+let isLanding = false;
 let ship = { x: width/2, y: height/2, rot: 0, prevY: height/2 };
 let mouse = { x: width/2, y: height/2 };
 
@@ -37,30 +41,31 @@ const resize = () => {
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
-    if (isGameReady) {
+    if (isGameReady && !isLanding) {
         ship.x = Math.max(50, Math.min(width - 50, ship.x));
         ship.y = Math.max(25, Math.min(height - 25, ship.y));
         mouse.x = ship.x;
         mouse.y = ship.y;
         spaceshipEl.style.transform = `translate3d(${ship.x - 50}px, ${ship.y - 20}px, 0) rotate(${ship.rot}deg)`;
-    } else {
-        if(!gsap.isTweening("#spaceship")) gsap.set("#spaceship", { x: width / 2 - 50 });
+    } else if (!gsap.isTweening("#spaceship")) {
+        gsap.set("#spaceship", { x: width / 2 - 50 });
     }
 };
 window.addEventListener('resize', resize);
 resize();
 
-// --- SCROLLYTELLING ---
+// --- SCROLL ---
 const startY = -200; 
 gsap.set("#spaceship", { x: () => window.innerWidth / 2 - 50, y: startY, autoAlpha: 1 });
 gsap.set("#game-layer", { autoAlpha: 0 }); 
 gsap.set("#text-404", { autoAlpha: 0, scale: 0.5 });
+gsap.set("#planet-earth", { right: -350 });
 
 let tl = gsap.timeline({
     scrollTrigger: {
         trigger: ".scroll-container",
         start: "top top",
-        end: "+=600%",
+        end: "+=700%",
         scrub: 1,
         pin: true, 
         invalidateOnRefresh: true,
@@ -76,44 +81,65 @@ tl.to("#text-approach", { opacity: 0, duration: 1 })
   .to("#game-layer", { autoAlpha: 1, duration: 0.5 })
   .fromTo("#spaceship", { x: () => window.innerWidth / 2 - 50, y: startY }, { x: () => window.innerWidth / 2 - 50, y: () => window.innerHeight / 2 - 20, duration: 3, ease: "power2.out" });
 
-// --- GAME LOGIC ---
+// --- LOGICA ---
 function enableGame() {
-    if (isGameReady || isCrashed) return;
+    if (isCrashed) isCrashed = false; 
+    if (isGameReady) return;
+
     isGameReady = true;
+    isLanding = false;
+    
     gameLayer.style.pointerEvents = "auto";
     hud.classList.remove('hidden');
     scoreboard.classList.remove('hidden'); 
     document.body.style.overflow = "hidden";
     canvas.style.opacity = 1; 
+    
+    // Asegurar limpieza
+    crashScreen.classList.remove('active'); crashScreen.classList.add('hidden');
+    newRecordMsg.classList.add('hidden');
+    blackOverlay.classList.remove('active');
+    
     ship.x = width / 2; ship.y = height / 2;
     mouse.x = width / 2; mouse.y = height / 2;
     gameDifficulty = 1; score = 0; scoreDisplay.innerText = "0";
+    
     gsap.killTweensOf("#spaceship");
-    spaceshipEl.style.opacity = 1;
-    spaceshipEl.style.visibility = 'visible';
-    spaceshipEl.style.display = 'block';
-    gameLayer.style.opacity = 1;
-    gameLayer.style.visibility = 'visible';
+    gsap.set("#planet-earth", { right: -350 }); 
+    
+    spaceshipEl.style.display = 'block'; spaceshipEl.style.visibility = 'visible'; spaceshipEl.style.opacity = 1;
+    spaceshipEl.classList.remove('active');
+    gameLayer.style.opacity = 1; gameLayer.style.visibility = 'visible';
     updateShip();
 }
 
 function disableGame() {
-    isGameReady = false;
+    isGameReady = false; isShipActive = false;
     gameLayer.style.pointerEvents = "none";
     hud.classList.add('hidden');
     scoreboard.classList.add('hidden');
     document.body.style.overflow = "auto";
 }
 
-window.addEventListener('mousedown', () => activateShip(true));
-window.addEventListener('mouseup', () => activateShip(false));
-window.addEventListener('touchstart', () => activateShip(true), {passive: false});
-window.addEventListener('touchend', () => activateShip(false));
-window.addEventListener('mousemove', e => { if(isGameReady) { mouse.x = e.clientX; mouse.y = e.clientY; } });
-window.addEventListener('touchmove', e => { if(isGameReady) { e.preventDefault(); mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; } }, {passive: false});
+// --- INPUTS ---
+const startThrust = (e) => {
+    if (!isGameReady || isCrashed || isLanding) return;
+    if(e.cancelable) e.preventDefault(); 
+    activateShip(true);
+};
+const endThrust = (e) => { activateShip(false); };
+
+window.addEventListener('mouseup', endThrust);
+window.addEventListener('touchend', endThrust);
+window.addEventListener('mousedown', startThrust);
+window.addEventListener('touchstart', startThrust, {passive: false});
+window.addEventListener('mousemove', e => { if(isGameReady && !isLanding) { mouse.x = e.clientX; mouse.y = e.clientY; } });
+window.addEventListener('touchmove', e => { if(isGameReady && !isLanding) { e.preventDefault(); mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; } }, {passive: false});
 
 function activateShip(active) {
-    if (!isGameReady || isCrashed) return;
+    if (!isGameReady || isCrashed || isLanding) {
+        isShipActive = false; spaceshipEl.classList.remove('active'); return;
+    }
     isShipActive = active;
     const msg = document.getElementById('status-msg');
     const hudPanel = document.querySelector('.hud-panel');
@@ -131,6 +157,7 @@ function activateShip(active) {
 }
 
 function updateShip() {
+    if (isLanding) return;
     let nextX = ship.x + (mouse.x - ship.x) * 0.2; 
     let nextY = ship.y + (mouse.y - ship.y) * 0.2;
     ship.x = Math.max(55, Math.min(width - 55, nextX));
@@ -143,24 +170,29 @@ function updateShip() {
     spaceshipEl.style.transform = `translate3d(${ship.x - 50}px, ${ship.y - 20}px, 0) rotate(${ship.rot}deg)`;
 }
 
+// --- LOOP ---
 const stars = Array(60).fill().map(() => ({ x: Math.random()*width, y: Math.random()*height, speed: Math.random()+0.5 }));
 function animate() {
     ctx.fillStyle = isShipActive ? 'rgba(0,0,0,0.2)' : '#050505';
     ctx.fillRect(0, 0, width, height);
-    if (isShipActive && isGameReady && !isCrashed) {
+
+    if (isShipActive && isGameReady && !isCrashed && !isLanding) {
         gameDifficulty += 0.002; if(gameDifficulty > 4) gameDifficulty = 4; 
         score += (gameDifficulty * 0.5); scoreDisplay.innerText = Math.floor(score);
+        if (score >= 100) startLandingSequence();
     }
+
     ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
     stars.forEach(s => {
-        let currentSpeed = s.speed * (isShipActive ? (10 * gameDifficulty) : 1);
-        s.x -= currentSpeed;
+        let speedMult = isLanding ? 2 : (isShipActive ? (10 * gameDifficulty) : 1);
+        s.x -= s.speed * speedMult;
         if(s.x < 0) { s.x = width; s.y = Math.random()*height; }
         ctx.beginPath(); 
-        if(isShipActive) ctx.fillRect(s.x, s.y, 40 * gameDifficulty, 2);
+        if(isShipActive && !isLanding) ctx.fillRect(s.x, s.y, 40 * gameDifficulty, 2);
         else ctx.arc(s.x, s.y, Math.random()*2, 0, Math.PI*2);
         ctx.fill();
     });
+
     if(isGameReady && !isCrashed) { updateShip(); manageObstacles(); }
     requestAnimationFrame(animate);
 }
@@ -168,6 +200,13 @@ function animate() {
 let obstacles = [];
 let frameCount = 0;
 function manageObstacles() {
+    if (isLanding) {
+        obstacles.forEach((o, i) => {
+            o.x -= 10; o.el.style.left = o.x+'px'; o.el.style.opacity = 0;
+            if(o.x < -150) { o.el.remove(); obstacles.splice(i, 1); }
+        });
+        return;
+    }
     if(!isShipActive) return;
     frameCount++;
     let spawnRate = 100 / gameDifficulty;
@@ -190,6 +229,56 @@ function manageObstacles() {
     });
 }
 
+// --- VICTORIA MEJORADA ---
+function startLandingSequence() {
+    isLanding = true;
+    isShipActive = false; 
+    hud.classList.add('hidden');
+    successMsg.classList.remove('hidden');
+    
+    gsap.to("#planet-earth", { right: 80, duration: 4, ease: "power2.out" });
+
+    spaceshipEl.classList.add('active'); 
+    spaceshipEl.querySelector('.engine-fire').style.width = '60px'; 
+
+    gsap.to(spaceshipEl, {
+        x: width - 120, 
+        y: height / 2, 
+        rotation: 0, 
+        scale: 0.1, 
+        opacity: 0, 
+        duration: 5, 
+        ease: "power2.inOut",
+        onComplete: () => {
+            blackOverlay.classList.add('active');
+            
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+                restartGameLoop();
+            }, 2000);
+        }
+    });
+}
+
+function restartGameLoop() {
+    isGameReady = false;
+    gameLayer.style.pointerEvents = "none";
+    hud.classList.add('hidden');
+    scoreboard.classList.add('hidden');
+    document.body.style.overflow = "auto"; 
+    obstacles.forEach(o => o.el.remove()); obstacles = []; 
+    isCrashed = false; isLanding = false;
+    
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    gsap.set(spaceshipEl, { scale: 1, opacity: 1, rotation: 0 });
+    ScrollTrigger.refresh();
+
+    setTimeout(() => {
+        blackOverlay.classList.remove('active');
+    }, 500);
+}
+
+// --- CRASH ---
 function createExplosion(x, y) {
     const shockwave = document.createElement('div');
     shockwave.className = 'shockwave';
@@ -212,60 +301,42 @@ function createExplosion(x, y) {
     }
 }
 
-// --- 5. CHOQUE CORREGIDO Y SUAVE ---
 function triggerCrash() {
-    isCrashed = true;
-    isShipActive = false;
-    gameDifficulty = 1; 
-    
+    isCrashed = true; isShipActive = false; gameDifficulty = 1; 
     spaceshipEl.style.display = 'none';
-    
     createExplosion(ship.x, ship.y);
-    
-    hud.classList.add('hidden');
-
     gsap.to('.obstacle-planet', { scale: 0, opacity: 0, duration: 0.6, ease: "power4.in", stagger: 0.02 });
-
+    
     setTimeout(() => {
         const finalScore = Math.floor(score);
-        
         if (finalScore > highScore) {
-            highScore = finalScore;
-            localStorage.setItem('warpRunHighScore', highScore);
-            highScoreDisplay.innerText = highScore;
+            highScore = finalScore; localStorage.setItem('warpRunHighScore', highScore); highScoreDisplay.innerText = highScore;
             if(introHighScore) introHighScore.innerText = highScore;
-            
             recordTextContent.innerText = `¡FELICIDADES! RÉCORD: ${finalScore}`;
             newRecordMsg.classList.remove('hidden');
         } else {
-            crashScreen.classList.remove('hidden'); 
-            
-            requestAnimationFrame(() => {
-                crashScreen.classList.add('active');
-            });
+            crashScreen.classList.remove('hidden');
+            setTimeout(() => crashScreen.classList.add('active'), 50);
         }
-
-        // 6. RESET
         setTimeout(() => {
-            crashScreen.classList.remove('active');
-            crashScreen.classList.add('hidden');
-            newRecordMsg.classList.add('hidden');
-            
-            isGameReady = false;
+            isGameReady = false; 
             gameLayer.style.pointerEvents = "none";
-            hud.classList.add('hidden');
-            scoreboard.classList.add('hidden');
+            hud.classList.add('hidden'); scoreboard.classList.add('hidden');
             document.body.style.overflow = "auto"; 
-            
-            obstacles.forEach(o => o.el.remove());
-            obstacles = [];
-            isCrashed = false;
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
+            obstacles.forEach(o => o.el.remove()); obstacles = []; 
+            window.scrollTo({ top: 0, behavior: 'auto' }); 
+            ScrollTrigger.refresh();
+            setTimeout(() => {
+                crashScreen.classList.remove('active');
+                newRecordMsg.classList.add('hidden');
+                setTimeout(() => {
+                    crashScreen.classList.add('hidden');
+                    isCrashed = false; 
+                    gsap.set(spaceshipEl, { scale: 1, opacity: 1, rotation: 0 });
+                }, 2000); 
+            }, 800);
         }, 3500); 
-
-    }, 500);
+    }, 800);
 }
 
 animate();

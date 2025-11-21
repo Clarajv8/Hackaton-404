@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&display=swap');
 
-body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace; margin: 0; overflow-x: hidden; width: 100vw; }
+body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace;  -ms-overflow-style: none; margin: 0; overflow-x: hidden; width: 100vw; user-select: none;          
+    -webkit-user-select: none;  
+    touch-action: none;         
+    -webkit-user-drag: none; }
+body::-webkit-scrollbar {
+  display: none;
+}
 #space-canvas { position: fixed; top: 0; left: 0; z-index: 0; }
 
 /* LAYOUT */
@@ -76,9 +82,60 @@ body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace; 
     background-color: rgba(100, 0, 0, 0.85);
     backdrop-filter: blur(5px);
 }
+/* Añade esto junto a los estilos del #scoreboard */
+
+.mission-goal {
+    font-size: 1rem;
+    color: #ffd700; 
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    padding-bottom: 5px;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    animation: pulse-goal 3s infinite;
+}
+
+@keyframes pulse-goal {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
+}
 
 #crash-screen.active {
     opacity: 1; 
+    pointer-events: auto;
+}
+
+/* ... (MANTÉN TODO TU CSS ANTERIOR) ... */
+
+/* --- LA TIERRA (Objetivo Final) --- */
+#planet-earth {
+    position: absolute;
+    top: 50%; 
+    right: -350px; 
+    transform: translateY(-50%);
+    width: 300px; 
+    height: 300px;
+    border-radius: 50%;
+    z-index: 55;
+
+    background-image: url('https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57735/land_ocean_ice_cloud_2048.jpg');
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+
+    box-shadow: 
+        inset -30px -20px 80px rgba(0,0,0,0.9), 
+        0 0 25px rgba(100, 200, 255, 0.4); 
+}
+
+
+/* --- NUEVO: OVERLAY PARA FUNDIDO A NEGRO --- */
+#black-overlay {
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+#black-overlay.active {
+    opacity: 1;
     pointer-events: auto;
 }
 
