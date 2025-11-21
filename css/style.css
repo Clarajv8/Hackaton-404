@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=VT323&display=swap');
 
+
 body { background-color: #050505; color: #0f0; font-family: 'VT323', monospace;  -ms-overflow-style: none; margin: 0; overflow-x: hidden; width: 100vw; user-select: none;          
     -webkit-user-select: none;  
     touch-action: none;         
@@ -24,7 +25,18 @@ body::-webkit-scrollbar {
 }
 
 /* INTERFAZ */
-.sci-fi-panel { position: relative; background: rgba(0, 10, 20, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(0, 247, 255, 0.2); padding: 3rem 5rem; text-align: center; box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); max-width: 90vw; }
+.sci-fi-panel { position: relative; background: rgba(0, 10, 20, 0.6); animation: title-breathe 4s ease-in-out infinite alternate; backdrop-filter: blur(10px); border: 1px solid rgba(0, 247, 255, 0.2); padding: 3rem 5rem; text-align: center; box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); max-width: 90vw; }
+@keyframes title-breathe {
+    0% {
+        transform: scale(1); 
+        opacity: 0.9; 
+    }
+    100% {
+        transform: scale(1.05); 
+        opacity: 1; 
+        text-shadow: 0 0 25px rgba(0, 247, 255, 0.8); 
+    }
+}
 .sci-fi-panel .main-title { font-family: 'Black Ops One', cursive; color: #fff; font-size: 4rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.1em; margin: 1rem 0; text-shadow: 0 0 15px rgba(0, 247, 255, 0.6); background: linear-gradient(to bottom, #ffffff, #aaddff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .sci-fi-panel .sub-title { font-family: 'VT323', monospace; color: #00f7ff; font-size: 1.8rem; letter-spacing: 0.15em; margin-top: 1rem; }
 .sci-fi-panel .panel-header { font-family: 'VT323', monospace; color: #5599bb; font-size: 1rem; letter-spacing: 0.2em; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -82,7 +94,6 @@ body::-webkit-scrollbar {
     background-color: rgba(100, 0, 0, 0.85);
     backdrop-filter: blur(5px);
 }
-/* Añade esto junto a los estilos del #scoreboard */
 
 .mission-goal {
     font-size: 1rem;
@@ -104,8 +115,6 @@ body::-webkit-scrollbar {
     opacity: 1; 
     pointer-events: auto;
 }
-
-/* ... (MANTÉN TODO TU CSS ANTERIOR) ... */
 
 /* --- LA TIERRA (Objetivo Final) --- */
 #planet-earth {
@@ -137,6 +146,108 @@ body::-webkit-scrollbar {
 #black-overlay.active {
     opacity: 1;
     pointer-events: auto;
+}
+
+/* --- ESTILOS PARA EL FINAL DRAMÁTICO --- */
+
+#post-victory-text, #final-glitch-screen {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease-in-out;
+}
+
+.force-visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.setup-fade-in.fade-in-now {
+    opacity: 1;
+}
+
+
+/* --- EFECTO CYBER-GLITCH (DESTRUCTIVO) --- */
+
+.cyber-glitch {
+    position: relative;
+    font-family: 'Black Ops One', sans-serif; 
+    font-size: 35vw; 
+    font-weight: bold;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    z-index: 1;
+    animation: shift 4s ease-in-out infinite alternate;
+}
+
+.cyber-glitch::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 2px;
+    text-shadow: -2px 0 #ff00c1;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: black; 
+    overflow: hidden;
+    clip-path: inset(0 0 0 0);
+    animation: glitch-anim-1 2s infinite linear alternate-reverse;
+}
+
+.cyber-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: -2px;
+    text-shadow: -2px 0 #00fff9;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+    clip-path: inset(0 0 0 0);
+    animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
+}
+
+.terminal-blue-text {
+    font-family: 'VT323', monospace; 
+    color: #00f7ff; 
+    
+    text-shadow: 0 0 10px rgba(0, 247, 255, 0.8), 0 0 20px rgba(0, 247, 255, 0.4);
+    
+    letter-spacing: 0.2em; 
+    text-transform: uppercase;
+}
+
+/* ANIMACIÓN DE RECORTE VIOLENTO 1 */
+@keyframes glitch-anim-1 {
+    0% { clip-path: inset(20% 0 80% 0); transform: translate(-5px); }
+    20% { clip-path: inset(60% 0 10% 0); transform: translate(5px); }
+    40% { clip-path: inset(40% 0 50% 0); transform: translate(-5px); }
+    60% { clip-path: inset(80% 0 5% 0); transform: translate(5px); }
+    80% { clip-path: inset(10% 0 60% 0); transform: translate(-5px); }
+    100% { clip-path: inset(30% 0 30% 0); transform: translate(5px); }
+}
+
+/* ANIMACIÓN DE RECORTE VIOLENTO 2 (Diferente ritmo para caos) */
+@keyframes glitch-anim-2 {
+    0% { clip-path: inset(10% 0 60% 0); transform: translate(5px); }
+    20% { clip-path: inset(80% 0 5% 0); transform: translate(-5px); }
+    40% { clip-path: inset(30% 0 20% 0); transform: translate(5px); }
+    60% { clip-path: inset(15% 0 80% 0); transform: translate(-5px); }
+    80% { clip-path: inset(55% 0 10% 0); transform: translate(5px); }
+    100% { clip-path: inset(40% 0 30% 0); transform: translate(-5px); }
+}
+
+/* Pequeño movimiento general para que parezca inestable */
+@keyframes shift {
+    0%, 40%, 44%, 58%, 61%, 65%, 69%, 73%, 100% { transform: skewX(0deg); }
+    41% { transform: skewX(10deg); }
+    42% { transform: skewX(-10deg); }
+    59% { transform: skewX(20deg) skewY(5deg); }
+    60% { transform: skewX(-20deg) skewY(-5deg); }
+    63% { transform: skewX(5deg); }
+    70% { transform: skewX(-10deg); }
+    71% { transform: skewX(5deg); }
 }
 
 /* MEDIA QUERIES */
